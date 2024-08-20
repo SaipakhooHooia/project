@@ -1,0 +1,255 @@
+.header{
+    display: flex;
+    justify-content: space-between;
+    background-image: url("/static/logo_background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+    height: 250px;
+}
+
+.logo1, .logo2{
+    font-weight:bolder;
+    color: #fff;
+    text-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    text-align: center;
+    justify-self: center;
+    box-sizing: border-box;
+}
+
+.logo1{
+    font-size: 50px;
+    padding: 10px;
+    font-family: 'Lora', sans-serif;
+    text-align: left;
+}
+
+.logo2{
+    font-size: 30px;
+    width: 100%;
+    font-family: 'Grey Qo', sans-serif;
+    text-align: right;
+    padding: 5px;
+}
+
+.mountain-icon{
+    width: 60px;
+    height: 60px;
+    background-size: cover;
+    background-image: url("/static/mountain.png");
+    align-self: center;
+    justify-self: center;
+}
+
+.home-icon{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    left: 0px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.menu{
+    display: flex;
+    position: relative;
+    right: 0px;
+    color: #fff;
+    text-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    font-weight: 700;
+    font-size: 25px;
+}
+
+.menu div{
+    text-align: center;
+    align-self: center;
+    justify-self: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0px;
+}
+
+.popup-menu-title:hover, .browse-title:hover, .login-signup-popup-menu:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.popup-menu, .login-signup-menu {
+    display: none; 
+    position: absolute; 
+    top: 60%; 
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 2; 
+    color: black;
+    text-shadow: none;
+    font-size: 20px;
+    box-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    width: auto;
+}
+
+.home-icon:hover{
+    cursor: pointer;
+}
+
+.popup-menu {
+    display: none; 
+    position: absolute; 
+    left: 15px;
+    top: 60%; 
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 2; 
+    color: black;
+    text-shadow: none;
+    font-size: 20px;
+    box-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    width: auto;
+}
+
+.popup-menu{
+    left: 110px;
+}
+
+.login-signup-menu{
+    left: 310px;
+}
+
+.popup-menu div:hover, .login-signup-menu div:hover{
+    cursor: pointer;
+    background-color: #c6c6c6;
+}
+
+.search-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-area{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd; 
+    height: 35px;
+    border-radius: 10px;
+}
+
+.search-area:focus-within {
+    border: 1px solid #6f6f6f60;
+    background-color: #dddddd58;
+    box-sizing: border-box;
+}
+
+
+input{
+    all: unset;
+    width: 200px;
+    height: 30px;
+    border: 0px;
+    background-color: none;
+}
+
+.lence-icon{
+    background-size: cover;
+    background-image: url("/static/lence.png");
+    width: 40px;
+    height: 40px;
+}
+
+.content1 div, .content2 div, .content3 div, .content4 div, .content5 div{
+    font-family: 'Lora', sans-serif;
+    color: #fff;
+    font-weight: 700;
+    font-size: 25px;
+    text-align: center;
+    align-self: center;
+    justify-self: center;
+}
+
+.content1:hover, .content2:hover, .content3:hover, .content4:hover, .content5:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.footer{
+    display: flex;
+    justify-content: space-between;
+    background-image: url("/static/logo_background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    height: 100px;
+}
+
+.main-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    height: auto;
+    width: 80%;
+    margin-top: 20px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    margin-left: auto;
+    margin-right: auto
+}
+
+.main-container div{
+    background-size: cover;
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.main-container div:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.main-container div div{
+    font-family: 'Lora', sans-serif;
+    color: #fff;
+    font-weight: 700;
+    font-size: 40px;
+    text-align: center;
+    align-self: center;
+    justify-self: center;
+    text-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+}
+
+.search-button{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    font-size: 18px;
+    width: 60px;
+    height: 30px;
+    border-radius: 0px 10px 10px 0px;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0;
+}
+
+.search-button:active{
+    font-size: 15px;
+}
+
+.search-button:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.message{
+    display: none;
+}

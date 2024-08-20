@@ -1,0 +1,10 @@
+.env
+database.txt
+docker-compose.yml
+Dockerfile
+lambda_function.py
+rds_without_redis.py
+requirements.txt
+text_email.py
+note
+__pycache__

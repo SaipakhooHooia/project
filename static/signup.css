@@ -1,0 +1,99 @@
+.login-signup-form, .login-signup-form-user {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 35%;
+    min-height: 400px; 
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+    justify-content: center;
+    text-align: left; 
+    background-color: #fff;
+    z-index: 3;
+    font-size: 20px;
+    border-radius: 10px;
+    box-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+}
+
+.login-area, .login-area-user{
+    display: none;
+}
+
+.login-area, .signup-area, .title, .login-area-user, .signup-area-user{
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+}
+.switch-to-signup:hover, .switch-to-login:hover, .switch-to-signup-user:hover, .switch-to-login-user:hover, .log-out:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.login-area input, .signup-area input, .login-area-user input, .signup-area-user input{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd; 
+    height: 35px;
+    border-radius: 10px;
+}
+
+input:focus-within {
+    border: 1px solid #6f6f6f60;
+    background-color: #dddddd58;
+    box-sizing: border-box;
+}
+
+label{
+    margin-right: 5px;
+}
+
+form, .switch-to-login, .switch-to-signup, .login-area>.g_id_signin, .login-area button, 
+.switch-to-login-user, .switch-to-signup-user, .login-area-user>.g_id_signin, .login-area-user button{
+    margin-left: 10px;
+}
+
+.login-area div, .signup-area div, .login-area button, .signup-area button,
+.login-area-user div, .signup-area-user div, .login-area-user button, .signup-area-user button{
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.title{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    font-weight:bolder;
+    color: #fff;
+    text-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    text-align: center;
+    align-items: center;
+    justify-self: center;
+    box-sizing: border-box;
+    font-size: 30px;
+    padding: 10px;
+    font-family: 'Lora', sans-serif;
+    text-align: left;
+    background-image: url("/static/logo_background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+
+.cancel{
+    width: 30px;
+    height: 30px;
+}
+
+.cancel:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.log-out{
+    display: none;
+}

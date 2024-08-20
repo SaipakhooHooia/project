@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-signin-client_id" content="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Grey+Qo:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="stylesheet" type="text/css" href="/static/merchant_browse.css" />
+  <link rel="stylesheet" type="text/css" href="/static/signup.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+  <title>Merchant setting Page</title>
+</head>
+<body>
+    <div class = "header">
+        <div class = "home-icon">
+            <div class = "logo1">Unnamed Rental</div>
+            <div class = "logo2">Easy Rentals, Easy Life!</div>
+        </div>
+        <div class = "menu">
+            <div class = "browse-title">瀏覽空間</div>
+                <div class = "popup-menu-title">成為空間合作者</div>
+            <div class = "popup-menu">
+                <div>關於我們</div>
+                <div>註冊新商家</div>
+                <div>商家登入</div>
+                <div>新增、編輯商店資料</div>
+            </div>
+            <div class = "login-signup-popup-menu">登入/註冊</div>
+            <div class = "login-signup-menu">
+                <div>使用者註冊</div>
+                <div>使用者登入</div>
+            </div>
+            <div class = "log-out">登出</div>
+            <div class = "search-container">
+                <div class = "search-area">
+                    <div class = "lence-icon"></div>
+                    <input class = "search-box" type = "text">
+                    <div class = "search-button">搜尋</div>
+                </div>
+            </div>
+        </div>
+     </div>
+     <div class = "login-signup-form">
+        <div class = "signup-area">
+            <div class = "title">Sign Up
+                <img class = "cancel" src = "/static/x_icon.png">
+            </div>
+            <form>
+                <div>
+                    <label for = "merchant-name">商家名稱</label>
+                    <input placeholder = "請輸入商家名稱" id = "merchant-name" name = "merchant-name">
+                </div>
+                <div>
+                    <label for = "user-name">聯絡人姓名</label>
+                    <input placeholder = "聯絡人姓名" id = "user-name" name = "user-name">
+                </div>
+                <div>
+                    <label for = "phone-number">連絡電話</label>
+                    <input placeholder = "連絡電話" id = "phone-number" name = "phone-number">
+                </div>
+                <div>
+                    <label for = "merchant-id">Tappay商家ID</label>
+                    <input placeholder = "Tappay商家ID" id = "merchant-id" name = "merchant-id">
+                </div>
+                <div>
+                    <label for = "service-type">租借類型</label>
+                    <select id = "service-type" name = "service-type">
+                        <option value = "辦公">辦公</option>
+                        <option value = "民宿">民宿</option>
+                        <option value = "藝術">藝術</option>
+                        <option value = "娛樂">娛樂</option>
+                        <option value = "運動">運動</option>
+                    </select>
+                </div>
+                <div>
+                    <label for = "intro">場地描述</label>
+                    <input placeholder = "場地描述" id = "intro" name = "intro">
+                </div>
+                <div>使用Gmail註冊</div>
+                <div id="g_id_onload"
+                data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
+                data-callback="onSignIn">
+                </div>
+                <div class="g_id_signin" data-type="standard"></div>
+                <button type = "button" class = "signup_submit">送出</button>
+            </form>
+            <div class = "switch-to-login">已經有帳號了?直接登入</div>
+            <div class = "message"></div>
+        </div>
+        <div class = "login-area">
+            <div class = "title">Login
+                <img class = "cancel" src = "/static/x_icon.png">
+            </div>
+            <div class="g_id_signin" data-type="standard"></div>
+            <button type = "button" class = "login_submit">送出</button>
+            <div class = "switch-to-signup">還沒有帳號嗎?在此註冊</div>
+            <div class = "message"></div>
+        </div>
+    </div>
+    <div class = "login-signup-form-user" style = "display: none">
+        <div class = "signup-area-user">
+            <div class = "title">Sign Up
+                <img class = "cancel" src = "/static/x_icon.png">
+            </div>
+            <form>
+                <div>
+                    <label for = "name-user">使用者名稱</label>
+                    <input placeholder = "使用者姓名" id = "name-user" name = "name-user">
+                </div>
+                <div>
+                    <label for = "phone-number-user">連絡電話</label>
+                    <input placeholder = "連絡電話" id = "phone-number-user" name = "phone-number-user">
+                </div>
+                <div>使用Gmail註冊</div>
+                <div id="g_id_onload"
+                data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
+                data-callback="onSignIn">
+                </div>
+                <div class="g_id_signin" data-type="standard"></div>
+                <button type = "button" class = "signup_submit_user">送出</button>
+            </form>
+            <div class = "switch-to-login-user">已經有帳號了?直接登入</div>
+            <div class = "message"></div>
+        </div>
+        <div class = "login-area-user">
+            <div class = "title">Login
+                <img class = "cancel" src = "/static/x_icon.png">
+            </div>
+            <div class="g_id_signin" data-type="standard"></div>
+            <button type = "button" class = "login_submit_user">送出</button>
+            <div class = "switch-to-signup-user">還沒有帳號嗎?在此註冊</div>
+            <div class = "message"></div>
+        </div>
+    </div>
+    <div class = "main">
+        <div class = "main-container">
+        </div>
+    </div>
+    <div class = "footer"></div>
+  <script src = "/static/menu_button.js" defer></script>
+  <script src = "/static/merchant_browse.js" defer></script>
+  <script src = "/static/signup.js" defer></script>
+</body>
+</html>

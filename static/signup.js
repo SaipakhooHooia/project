@@ -1,40 +1,90 @@
 //let fetchData = null;
 
-let gmail = null;
-function onSignIn(response) {
-    console.log("onSignIn called");
-    let id_token = response.credential;
-    console.log("ID Token: " + id_token);
+let userLoginGmail = null;
+let userSignupGmail = null;
+let merchantLoginGmail = null;
+let merchantSignupGmail = null;
+function handleCredentialResponse(response) {
+    const buttonType = handleCredentialResponse.buttonType;
+    const responsePayload = decodeJwtResponse(response.credential);
 
-    fetch('/tokensignin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({id_token: id_token})
-    }).then(response => {
-        if (response.ok) {
-            return response.json();
+    console.log("ID: " + responsePayload.sub);
+    console.log('Full Name: ' + responsePayload.name);
+    console.log('Given Name: ' + responsePayload.given_name);
+    console.log('Family Name: ' + responsePayload.family_name);
+    console.log("Image URL: " + responsePayload.picture);
+    
+    switch (buttonType) {
+        case 'user-login':
+            console.log("User login with: " + responsePayload.email);
+            userLoginGmail = responsePayload.email;
+            break;
+        case 'user-signup':
+            console.log("User signup with: " + responsePayload.email);
+            userSignupGmail = responsePayload.email;
+            break;
+        case 'merchant-login':
+            console.log("Merchant login with: " + responsePayload.email);
+            merchantLoginGmail = responsePayload.email;
+            break;
+        case 'merchant-signup':
+            console.log("Merchant signup with: " + responsePayload.email);
+            merchantSignupGmail = responsePayload.email;
+            break;
+        default:
+            console.error("Unknown button type:", buttonType);
+    }
+}
+
+function decodeJwtResponse(token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+}
+
+window.onload = function () {
+    google.accounts.id.initialize({
+        client_id: "69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com",
+        callback: handleCredentialResponse
+    });
+    
+    const buttons = [
+        {id: 'user-login-button', type: 'user-login'},
+        {id: 'user-signup-button', type: 'user-signup'},
+        {id: 'merchant-login-button', type: 'merchant-login'},
+        {id: 'merchant-signup-button', type: 'merchant-signup'}
+    ];
+
+    buttons.forEach(button => {
+        const buttonElement = document.getElementById(button.id);
+        if (buttonElement) {
+            google.accounts.id.renderButton(
+                buttonElement,
+                { 
+                    theme: "filled_blue", 
+                    size: "large", 
+                    type: "icon",
+                    click_listener: () => {
+                        handleCredentialResponse.buttonType = button.type;
+                    }
+                } 
+            );
         } else {
-            return response.text().then(text => { throw new Error(text) });
+            console.error(`Button element with id ${button.id} not found`);
         }
-    }).then(data => {
-        console.log(data);
-        //localStorage.setItem('gmail', data.email);
-        gmail = data.email;
-        return data.email;
-    }).catch(error => {
-        console.error('Error:', error);
     });
 }
 
 document.querySelector(".signup_submit").addEventListener("click", async function () {
-    if (!gmail) {
+    if (!merchantSignupGmail) {
         alert("Gmail not available. Please sign in first.");
         return;
     }
     document.querySelector(".message").textContent = "資料上傳中，請稍後...";
-    console.log(document.querySelector("#merchant-name").value,document.querySelector("#user-name").value,gmail,document.querySelector("#phone-number").value,)
+    //console.log(document.querySelector("#merchant-name").value,document.querySelector("#user-name").value,gmail,document.querySelector("#phone-number").value,)
     let response = await fetch("/api/signup", {
         method: "POST",
         headers: {
@@ -43,11 +93,15 @@ document.querySelector(".signup_submit").addEventListener("click", async functio
         body: JSON.stringify({
             merchant_name: document.querySelector("#merchant-name").value,
             user_name: document.querySelector("#user-name").value,
-            gmail: gmail,
+            gmail: merchantSignupGmail,
             phone_number: document.querySelector("#phone-number").value,
             merchant_id: document.querySelector("#merchant-id").value,
             service_type: document.querySelector("#service-type").value,
-            intro: document.querySelector("#intro").value
+            intro: document.querySelector("#intro").value,
+            address: document.querySelector("#address").value,
+            google_map_src: document.querySelector("#google_map_src").value,
+            supply: document.querySelector("#supply").value,
+            note: document.querySelector("#note").value
         })
     });
     let data = await response.json();
@@ -74,7 +128,7 @@ function setCookie(name, value, days) {
 }
 
 document.querySelector(".login_submit").addEventListener("click", async function () {
-    if (!gmail) {
+    if (!merchantLoginGmail) {
         alert("Gmail not available. Please sign in first.");
         return;
     }
@@ -85,7 +139,7 @@ document.querySelector(".login_submit").addEventListener("click", async function
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            gmail: gmail,
+            gmail: merchantLoginGmail,
         })
     });
     let data = await response.json();
@@ -102,12 +156,12 @@ document.querySelector(".login_submit").addEventListener("click", async function
 
 //---------使用者註冊部分---------
 document.querySelector(".signup_submit_user").addEventListener("click", async function () {
-    if (!gmail) {
+    if (!userSignupGmail) {
         alert("Gmail not available. Please sign in first.");
         return;
     }
     document.querySelector(".message").textContent = "資料上傳中，請稍後...";
-    console.log(document.querySelector("#name-user").value,document.querySelector("#phone-number-user").value,gmail,)
+    //console.log(document.querySelector("#name-user").value,document.querySelector("#phone-number-user").value,gmail,)
     let response = await fetch("/api/user_signup", {
         method: "POST",
         headers: {
@@ -116,7 +170,7 @@ document.querySelector(".signup_submit_user").addEventListener("click", async fu
         body: JSON.stringify({
             name_user: document.querySelector("#name-user").value,
             phone_number_user: document.querySelector("#phone-number-user").value,
-            gmail: gmail
+            gmail: userSignupGmail
         })
     });
     let data = await response.json();
@@ -124,13 +178,14 @@ document.querySelector(".signup_submit_user").addEventListener("click", async fu
         alert(data.error);
     }
     else{
-        document.querySelector(".message").textContent = "註冊成功";
+        document.querySelector(".user-signup-message").textContent = "註冊成功";
         setCookie("user_token", data.token, 7);
+        window.location.reload();
     };
 });
 
 document.querySelector(".login_submit_user").addEventListener("click", async function () {
-    if (!gmail) {
+    if (!userLoginGmail) {
         alert("Gmail not available. Please sign in first.");
         return;
     }
@@ -141,7 +196,7 @@ document.querySelector(".login_submit_user").addEventListener("click", async fun
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            gmail: gmail,
+            gmail: userLoginGmail,
         })
     });
     let data = await response.json();

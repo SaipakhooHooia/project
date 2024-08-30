@@ -75,15 +75,31 @@
                     </select>
                 </div>
                 <div>
+                    <label for = "address">場地位址</label>
+                    <input placeholder = "場地位址" id = "address" name = "address">
+                </div>
+                <div>
+                    <label for = "google_map_src">場地位址連結</label>
+                    <input placeholder = "可提供Google map定位的連結" id = "google_map_src" name = "google_map_src">
+                </div>
+                <div>
                     <label for = "intro">場地描述</label>
                     <input placeholder = "場地描述" id = "intro" name = "intro">
+                </div>
+                <div>
+                    <label for = "supply">提供設備</label>
+                    <input placeholder = "提供設備" id = "supply" name = "supply">
+                </div>
+                <div>
+                    <label for = "note">注意事項</label>
+                    <input placeholder = "是否有特別注意事項" id = "note" name = "note">
                 </div>
                 <div>使用Gmail註冊</div>
                 <div id="g_id_onload"
                 data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
                 data-callback="onSignIn">
                 </div>
-                <div class="g_id_signin" data-type="standard"></div>
+                <div id="merchant-signup-button"></div>
                 <button type = "button" class = "signup_submit">送出</button>
             </form>
             <div class = "switch-to-login">已經有帳號了?直接登入</div>
@@ -93,7 +109,7 @@
             <div class = "title">Login
                 <img class = "cancel" src = "/static/x_icon.png">
             </div>
-            <div class="g_id_signin" data-type="standard"></div>
+            <div id="merchant-login-button"></div>
             <button type = "button" class = "login_submit">送出</button>
             <div class = "switch-to-signup">還沒有帳號嗎?在此註冊</div>
             <div class = "message"></div>
@@ -118,17 +134,17 @@
                 data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
                 data-callback="onSignIn">
                 </div>
-                <div class="g_id_signin" data-type="standard"></div>
+                <div id="user-signup-button"></div>
                 <button type = "button" class = "signup_submit_user">送出</button>
             </form>
             <div class = "switch-to-login-user">已經有帳號了?直接登入</div>
-            <div class = "message"></div>
+            <div class = "user-signup-message"></div>
         </div>
         <div class = "login-area-user">
             <div class = "title">Login
                 <img class = "cancel" src = "/static/x_icon.png">
             </div>
-            <div class="g_id_signin" data-type="standard"></div>
+            <div id="user-login-button"></div>
             <button type = "button" class = "login_submit_user">送出</button>
             <div class = "switch-to-signup-user">還沒有帳號嗎?在此註冊</div>
             <div class = "message"></div>

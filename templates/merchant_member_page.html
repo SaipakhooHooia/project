@@ -75,15 +75,31 @@
                     </select>
                 </div>
                 <div>
+                    <label for = "address">場地位址</label>
+                    <input placeholder = "場地位址" id = "address" name = "address">
+                </div>
+                <div>
+                    <label for = "google_map_src">場地位址連結</label>
+                    <input placeholder = "可提供Google map定位的連結" id = "google_map_src" name = "google_map_src">
+                </div>
+                <div>
                     <label for = "intro">場地描述</label>
                     <input placeholder = "場地描述" id = "intro" name = "intro">
+                </div>
+                <div>
+                    <label for = "supply">提供設備</label>
+                    <input placeholder = "提供設備" id = "supply" name = "supply">
+                </div>
+                <div>
+                    <label for = "note">注意事項</label>
+                    <input placeholder = "是否有特別注意事項" id = "note" name = "note">
                 </div>
                 <div>使用Gmail註冊</div>
                 <div id="g_id_onload"
                 data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
                 data-callback="onSignIn">
                 </div>
-                <div class="g_id_signin" data-type="standard"></div>
+                <div id="merchant-signup-button"></div>
                 <button type = "button" class = "signup_submit">送出</button>
             </form>
             <div class = "switch-to-login">已經有帳號了?直接登入</div>
@@ -93,9 +109,13 @@
             <div class = "title">Login
                 <img class = "cancel" src = "/static/x_icon.png">
             </div>
-            <div class="g_id_signin" data-type="standard"></div>
+            <div id="merchant-login-button"></div>
             <button type = "button" class = "login_submit">送出</button>
             <div class = "switch-to-signup">還沒有帳號嗎?在此註冊</div>
+            <div>
+                <input type="checkbox" id="agree-term" name="agree-term">
+                <label for="agree-term">我已閱讀並同意服務條款</label>
+            </div>
             <div class = "message"></div>
         </div>
     </div>
@@ -118,8 +138,9 @@
                 data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
                 data-callback="onSignIn">
                 </div>
-                <div class="g_id_signin" data-type="standard"></div>
+                <div id="user-signup-button"></div>
                 <button type = "button" class = "signup_submit_user">送出</button>
+                <div class = "user-signup-message"></div>
             </form>
             <div class = "switch-to-login-user">已經有帳號了?直接登入</div>
         </div>
@@ -127,25 +148,75 @@
             <div class = "title">Login
                 <img class = "cancel" src = "/static/x_icon.png">
             </div>
-            <div class="g_id_signin" data-type="standard"></div>
+            <div id="user-login-button"></div>
             <button type = "button" class = "login_submit_user">送出</button>
             <div class = "switch-to-signup-user">還沒有帳號嗎?在此註冊</div>
             <div class = "message"></div>
         </div>
     </div>
-    <div class = "merchant-setting-form">
-        <form id = "form">
-            <div class = "wrapper">
-                <h1>商家會員中心</h1>
-                <form>
-                    <div class = "merchant-member-data">
+    <div class = "main">
+        <div class = "setting-list">
+            <div class = "merchant-setting-title">商店資料管理</div>
+            <div class = "order-setting-title">訂單管理</div>
+            <div class = "report-setting-title">問題回報</div>
+        </div>
+        <div class = "merchant-setting-form">
+            <form id = "form">
+                <div class = "wrapper">
+                    <h1>商家會員中心</h1>
+                    <form>
+                        <div class = "merchant-member-data">
+                        </div>
+                    </form>
+                    <button type = "button" class = "submit">送出</button>
+                    <strong class = "sending-message"></strong>
+                </div>
+            </form>
+        </div>
+        <div class = "order-setting-form">
+            <h1>訂單管理</h1>
+            <div class = "search-bar-wrapper">
+                <form id = "search-form">
+                    <div class = "search-bar">
+                        <select id = "search-option">
+                            <option value = "">全部</option>
+                            <option value = "blur">模糊搜尋</option>
+                            <option value = "m.merchant_name">商店名稱</option>
+                            <option value = "o.prime">銀行交易號碼</option>
+                            <option value = "o.booking_name_user">預約姓名</option>
+                            <option value = "o.booking_phone_number_user">預約電話</option>
+                            <option value = "o.booking_gmail">預約信箱</option>
+                            <option value = "o.total_price">訂單金額</option>
+                            <option value = "o.is_paid">交易結果</option>
+                            <option value = "o.date">預約日期</option>
+                            <option value = "o.service_time_name">預約時段</option>
+                            <option value = "o.order_number">訂單編號</option>
+                            <option value = "o.comment">備註</option>
+                        </select>
                     </div>
+                    <button class = "search-orders">搜尋</button>
                 </form>
-                <button type = "button" class = "submit">送出</button>
-                <h3>你可以隨時在會員中心的商家資料中修改</h3>
-                <div class = "message"></div>
             </div>
-        </form>
+            <div class = "wrapper1">
+                    <div class = "order-data-column">
+                        <div>商店名稱</div>
+                        <div>銀行交易號碼</div>
+                        <div>預約姓名</div>
+                        <div>預約電話</div>
+                        <div>預約信箱</div>
+                        <div>訂單編號</div>
+                        <div>預約日期</div>
+                        <div>起始時間</div>
+                        <div>結束時間</div>
+                        <div>預約時段</div>
+                        <div>單筆金額</div>
+                        <div>總金額</div>
+                        <div>交易結果</div>
+                        <div>附註</div>
+                    </div>
+                    <div class = "order-data-form"></div>
+            </div>
+        </div>
     </div>
     <div class = "footer"></div>
   <script src = "/static/merchant_member_page.js" defer></script>

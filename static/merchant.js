@@ -7,24 +7,27 @@ console.log(keyword);
 let fetchData = null;
 let calendarData = null;
 let serviceHourData = null;
+let orderData = null;
 async function initialize(){
-    document.querySelector(".selected-time").innerHTML = "";
+    //document.querySelector(".selected-time").innerHTML = "";
     let response = await fetch("/api/merchant/" + keyword);
     let data = await response.json();
     fetchData = data;
+    orderData = fetchData.order_history;
     calendarData = data[keyword].calender;
-    console.log(fetchData);
+    console.log(orderData);
     serviceHourData = data[keyword].service_hours;
     renderImg(fetchData[keyword].images);
     let serviceHourList = getServiceHour(serviceHourData);
     renderCalender(calendarData);
-    let serviceHourRange = renderServiceHour(serviceHourList);
+    /*let serviceHourRange = renderServiceHour(serviceHourList);
     renderHour(calendarData, serviceHourRange);
-    renderCurrentHour(calendarData.today_hour);
-    toggleSelectedDate(serviceHourList, serviceHourRange);
+    renderCurrentHour(calendarData.today_hour);*/
+    toggleSelectedDate(serviceHourList, orderData);
     slideImages();
     caculateMerchantInfoWidth();
     renderMerchantInfo(fetchData, serviceHourList);
+    checkListButton();
 }
 
 initialize();
@@ -254,18 +257,35 @@ function renderServiceHour(serviceHourList) {
     return serviceHourRange;
 };
 
-function toggleSelectedDate(serviceHourList, serviceHourRange) {
+let monthToDigit = {
+    "January": "01",
+    "February": "02",
+    "March": "03",
+    "April": "04",
+    "May": "05",
+    "June": "06",
+    "July": "07",
+    "August": "08",
+    "September": "09",
+    "October": "10",
+    "November": "11",
+    "December": "12"
+};
+
+function toggleSelectedDate(serviceHourList, orderData) {
     document.querySelectorAll('.active-date').forEach(item => {
         item.addEventListener('click', function() {
             console.log('Clicked active-date:', this); 
             document.querySelectorAll('.active-date').forEach(element => element.classList.remove('selected'));
             this.classList.toggle('selected');
-            toggleSelectedHour(serviceHourList, serviceHourRange);
+            renderServiceHours(serviceHourList, orderData);
+            //toggleSelectedHour(serviceHourList, serviceHourRange);
         });
     });
 };
-
+/*
 function toggleSelectedHour(serviceHourList, serviceHourRange) {
+    
     console.log("serviceHourList:", serviceHourList);
     let selectedTimeRange = [];
     for (let i = 0; i < serviceHourList.length; i++) {
@@ -346,7 +366,6 @@ function toggleSelectedHour(serviceHourList, serviceHourRange) {
 };
 
 function extractDateComponents(dateString) {
-    // 將日期字符串分割成數組
     const [year, month, day] = dateString.split('/');
 
     return {
@@ -355,10 +374,10 @@ function extractDateComponents(dateString) {
         day: day
     };
 }
-
+*/
 
 let selectedDateandTimeRange = {};
-function saveSelected(selectedTimeRange){
+function saveSelected(){
     //console.log("selectedTimeRange:", selectedTimeRange);
     let activeYear = null;
     let activeMonth = null;
@@ -366,36 +385,38 @@ function saveSelected(selectedTimeRange){
     let thisElement = document.querySelector(".this");
     let nextElement = document.querySelector(".next");
     let nextNextElement = document.querySelector(".next-next");
+
     if (thisElement) {
     let displayStyle = window.getComputedStyle(thisElement).display;
     if (displayStyle === "block") {
         //console.log("this element is active");
         activeYear = thisElement.querySelector('.year').textContent;
-        activeMonth = thisElement.querySelector('.month').textContent;
-        console.log("activeYear:", activeYear, "activeMonth:", activeMonth);
+        activeMonth = monthToDigit[thisElement.querySelector('.month').textContent];
+        console.log("activeYear:", activeYear, "activeMonth:", monthToDigit[activeMonth]);
     }}
     if (nextElement) {
     let displayStyle = window.getComputedStyle(nextElement).display;
     if (displayStyle === "block") {
         console.log("next element is active");
         activeYear = nextElement.querySelector('.year').textContent;
-        activeMonth = nextElement.querySelector('.month').textContent;
-        console.log("activeYear:", activeYear, "activeMonth:", activeMonth);
+        activeMonth = monthToDigit[nextElement.querySelector('.month').textContent];
+        console.log("activeYear:", activeYear, "activeMonth:", monthToDigit[activeMonth]);
     }}
     if (nextNextElement) {
     let displayStyle = window.getComputedStyle(nextNextElement).display;
     if (displayStyle === "block") {
         console.log("next-next element is active");
         activeYear = nextNextElement.querySelector('.year').textContent;
-        activeMonth = nextNextElement.querySelector('.month').textContent;
-        console.log("activeYear:", activeYear, "activeMonth:", activeMonth);
+        activeMonth = monthToDigit[nextNextElement.querySelector('.month').textContent];
+        console.log("activeYear:", activeYear, "activeMonth:", monthToDigit[activeMonth]);
     }}
     activeDate = document.querySelector(".active-date.selected").textContent;
-    if (activeDate) {
+    return {activeYear, activeMonth, activeDate};
+    /*if (activeDate) {
         selectedDateandTimeRange[activeYear+"/"+activeMonth+"/"+activeDate] = selectedTimeRange;
         console.log("selectedDateandTimeRange:", selectedDateandTimeRange);
         processReservations(selectedDateandTimeRange);
-    };
+    };*/
 
     /*if(Object.keys(newReservations).length > 0) {
         //console.log("newReservations:", newReservations);
@@ -445,9 +466,7 @@ function getNextDay(dateStr) {
     const [month, day] = monthDay.split(' ');
     return `${year}/${month}/${day.padStart(2, '0')}`;
 };
-
-let newReservations = {}; // 將 newReservations 設為全域變數
-
+/*
 function processReservations(selectedDateandTimeRange) {
     newReservations = {}; // 重設全域變數
     
@@ -515,9 +534,10 @@ function handleCompleteButtonClick() {
     } else {
         sendBookingData(newReservations);
     }
-}
+}*/
 
 //在這裡切換到booking page
+/*
 document.querySelector(".complete-button").addEventListener("click", () => {
     let reservationData = {
         merchant_name: keyword,
@@ -536,7 +556,7 @@ document.querySelector(".complete-button").addEventListener("click", () => {
         document.querySelector(".login-area-user").style.display = "block";
         document.querySelector(".signup-area-user").style.display = "none";
     }
-});
+});*/
   
 //保存localStorage的預約紀錄
 function updateSelectedDate() {
@@ -583,10 +603,12 @@ function caculateMerchantInfoWidth() {
 
 function renderMerchantInfo(fetchData, serviceHourList){
     document.querySelector(".merchant-name").textContent = Object.keys(fetchData)[0];
-    document.querySelector(".address").textContent = '地址: 未定';
+    document.querySelector(".address").textContent += fetchData[keyword]['address'];
+    document.querySelector(".map-container iframe").src = fetchData[keyword]['google_map_src'];
+    document.querySelector(".supply").textContent += fetchData[keyword]['supply'];
+    document.querySelector(".note").textContent += fetchData[keyword]['note'];
     for (let i = 0; i < serviceHourList.length; i++) {
         let serviceTime = serviceHourList[i];
-            //console.log(serviceTime);
         let serviceHour = document.createElement("div");
         if (serviceTime[3] !== "") {
             serviceHour.textContent = `${serviceTime[3]}: ${serviceTime[0]} - ${serviceTime[1]}，${serviceTime[2]} 元`;
@@ -601,4 +623,217 @@ function renderMerchantInfo(fetchData, serviceHourList){
     let intro = document.createElement("div");
     intro.textContent = `${fetchData[keyword]['intro']}`;
     document.querySelector(".intro").appendChild(intro);
-}
+};
+
+function renderServiceHours(serviceHourList, orderData) {
+    let serviceHourRanges = document.querySelectorAll(".service-hour-range");
+    if (serviceHourRanges) {
+        for (let serviceHourRange of serviceHourRanges) {
+            serviceHourRange.remove();
+        }
+    };
+
+    let activeTime = saveSelected();
+    console.log("activeTime:", activeTime);//{"activeYear": "2024","activeMonth": "08","activeDate": "30"}
+    if (activeTime.activeDate < 10){
+        activeTime.activeDate = `0${activeTime.activeDate}`;
+    }
+    let currentDate = `${activeTime.activeYear}-${activeTime.activeMonth}-${activeTime.activeDate}`;
+    let newReservations = JSON.parse(localStorage.getItem("newReservations")) || { reservations: {} };
+    let listElement = document.querySelector(".list");
+    if (newReservations.merchant_name && newReservations.merchant_name !== keyword) {
+        newReservations.merchant_name = keyword;
+        newReservations.reservations = {};
+        localStorage.setItem("newReservations", JSON.stringify(newReservations));
+        listElement.innerHTML = '';
+    }
+    for (let i = 0; i < serviceHourList.length; i++) {
+        let serviceHour = serviceHourList[i];
+        let serviceHourRange = document.createElement("h3");
+        serviceHourRange.classList.add("service-hour-range");
+        serviceHourRange.textContent = `${serviceHour[0]} - ${serviceHour[1]}\t ${serviceHour[3]} `;
+        serviceHourRange.dataset.index = i; 
+        console.log("currentDate:", currentDate);
+        for (let order of orderData) {
+            let orderDate = order[0];
+            if (orderDate === currentDate) {
+                if ((parseInt(serviceHour[0]) <= parseInt(order[1]) && parseInt(serviceHour[1]) >= parseInt(order[1]))||
+                    (parseInt(serviceHour[0]) <= parseInt(order[2]) && parseInt(serviceHour[1]) >= parseInt(order[2]))){
+                    serviceHourRange.classList.add('cancelled');
+                    }
+            };
+        };
+
+        serviceHourRange.addEventListener('click', function() {
+            if (this.classList.contains('clicked')) {
+                this.classList.remove('clicked');
+                this.textContent = this.textContent.replace(' (已選)', '');
+                
+                if (newReservations.reservations[currentDate]) {
+                    newReservations.reservations[currentDate] = newReservations.reservations[currentDate].filter(r => 
+                        !(r.start === serviceHour[0] && r.end === serviceHour[1] && r.service_name === serviceHour[3])
+                    );
+                    
+                    if (newReservations.reservations[currentDate].length === 0) {
+                        delete newReservations.reservations[currentDate];
+                    }
+                }
+            } 
+            else if (!this.classList.contains('cancelled')) {
+                this.classList.add('clicked');
+                this.textContent += ' (已選)';
+                
+                if (!newReservations.reservations[currentDate]) {
+                    newReservations.reservations[currentDate] = [];
+                }
+                newReservations.reservations[currentDate].push({
+                    start: serviceHour[0],
+                    end: serviceHour[1],
+                    price: serviceHour[2],
+                    service_name: serviceHour[3]
+                });
+            }
+            
+            localStorage.setItem("newReservations", JSON.stringify(newReservations));
+        });
+
+        document.querySelector(".service-time").appendChild(serviceHourRange);
+    };
+
+    //renderListFuntion(serviceHourList, activeTime);
+    renderSelectedTime(newReservations);
+};
+
+function checkListButton(){
+    document.querySelector(".check-list").addEventListener('click', function() {
+        console.log("Check list button clicked");
+        let newReservations = JSON.parse(localStorage.getItem("newReservations")) || { reservations: {} };
+        let listElement = document.querySelector(".list");
+        if (newReservations.merchant_name && newReservations.merchant_name !== keyword) {
+            newReservations.merchant_name = keyword;
+            newReservations.reservations = {};
+            localStorage.setItem("newReservations", JSON.stringify(newReservations));
+            listElement.innerHTML = '';
+        }
+
+        if (!newReservations.merchant_name) {
+            newReservations.merchant_name = keyword;
+            newReservations.reservations = {};
+            localStorage.setItem("newReservations", JSON.stringify(newReservations));
+            listElement.innerHTML = '';
+        }
+
+        listElement.innerHTML = '';
+        
+        let titleElement = document.createElement("div");
+        titleElement.classList.add("reserve-title");
+        titleElement.textContent = (newReservations.merchant_name) + " 預約表";
+        let Xicon = document.createElement("img");
+        Xicon.classList.add("fa-xmark");
+        Xicon.src = "/static/x_icon.png";
+        titleElement.appendChild(Xicon);
+        Xicon.addEventListener('click', function() {
+            listElement.style.display = "none";
+        });
+        if (!document.querySelector(".reserve-title")) {
+            listElement.appendChild(titleElement);
+        }
+        
+        for (let date in newReservations.reservations) {
+            let dateCard = document.createElement("div");
+            dateCard.classList.add("date-card");
+            dateCard.innerHTML = `<div class="reserve-date">${date}</div>`;
+            
+            for (let reservation of newReservations.reservations[date]) {
+                let reservationCard = document.createElement("div");
+                reservationCard.classList.add("reservation-card");
+                reservationCard.innerHTML = `
+                    <div>開始時間: ${reservation.start}</div>
+                    <div>結束時間: ${reservation.end}</div>
+                    <div>價格: ${reservation.price}</div>
+                    <div>服務名稱: ${reservation.service_name}</div>
+                `;
+                dateCard.appendChild(reservationCard);
+            };
+            listElement.appendChild(dateCard);
+        };
+        let goToCheck = document.createElement("div");
+        goToCheck.classList.add("go-to-check");
+        goToCheck.textContent = "確認預約";
+        listElement.appendChild(goToCheck);
+        goToCheck.addEventListener('click', function() {
+            let userToken = document.cookie.split('; ').find(row => row.startsWith('user_token='));
+            if (userToken) {
+            window.location.href = "/booking";
+            }
+            else{
+                document.querySelector(".login-signup-form-user").style.display = "block";
+            }
+        });
+        listElement.style.display = "block";
+    });
+};
+/*
+function renderListFuntion(serviceHourList, activeTime) {
+    let newReservations = JSON.parse(localStorage.getItem("newReservations")) || { reservations: {} };
+    
+    document.querySelector(".add-to-list").addEventListener('click', function() {
+        let currentDate = `${activeTime.activeYear}-${activeTime.activeMonth}-${activeTime.activeDate}`;
+        let clickedElements = document.querySelectorAll(".service-hour-range.clicked");
+
+        if (!newReservations.reservations[currentDate]) {
+            newReservations.reservations[currentDate] = [];
+        }
+
+        for (let clickedElement of clickedElements) {
+            let index = clickedElement.dataset.index;
+            let serviceHour = serviceHourList[index];
+
+            let tempDict = {
+                "start": serviceHour[0],
+                "end": serviceHour[1],
+                "price": serviceHour[2],
+                "service_name": serviceHour[3]
+            };
+
+            let existingReservation = newReservations.reservations[currentDate].find(r => 
+                r.start === tempDict.start && 
+                r.end === tempDict.end && 
+                r.service_name === tempDict.service_name
+            );
+
+            if (!existingReservation) {
+                newReservations.reservations[currentDate].push(tempDict);
+            }
+        }
+
+        newReservations.merchant_name = keyword;
+
+        localStorage.setItem("newReservations", JSON.stringify(newReservations));
+        
+        console.log("Updated reservations:", newReservations);
+        renderSelectedTime(newReservations);
+    });
+};*/
+
+
+function renderSelectedTime(newReservations){
+    if(keyword === newReservations.merchant_name){
+        for(let date in newReservations.reservations){
+            let selectedDate = saveSelected();
+            if(date === `${selectedDate.activeYear}-${selectedDate.activeMonth}-${selectedDate.activeDate}`){
+                for (let reservation of newReservations.reservations[date]) {
+                    for(let serviceHourRange of document.querySelectorAll(".service-hour-range")){
+                        if(serviceHourRange.textContent.includes(reservation.start) && serviceHourRange.textContent.includes(reservation.end))
+                            {
+                            serviceHourRange.classList.add('clicked');
+                            if(!serviceHourRange.textContent.includes('(已選)')) {
+                                serviceHourRange.textContent += ' (已選)';
+                            };
+                        }
+                    };
+                };
+            };
+        };
+    };
+};

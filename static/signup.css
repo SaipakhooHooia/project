@@ -4,8 +4,9 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 35%;
-    min-height: 400px; 
+    width: auto;
+    max-height: 400px; 
+    overflow-y: auto;
     margin-left: auto;
     margin-right: auto;
     align-items: center;
@@ -28,6 +29,11 @@
     width: 100%;
     border-radius: 10px 10px 0 0;
 }
+
+.switch-to-signup, .switch-to-login, .switch-to-signup-user, .switch-to-login-user{
+    color: blue;
+}
+
 .switch-to-signup:hover, .switch-to-login:hover, .switch-to-signup-user:hover, .switch-to-login-user:hover, .log-out:hover{
     cursor: pointer;
     text-decoration: underline;
@@ -53,7 +59,8 @@ label{
 }
 
 form, .switch-to-login, .switch-to-signup, .login-area>.g_id_signin, .login-area button, 
-.switch-to-login-user, .switch-to-signup-user, .login-area-user>.g_id_signin, .login-area-user button{
+.switch-to-login-user, .switch-to-signup-user, .login-area-user>.g_id_signin, .login-area-user button,
+#user-login-button, #merchant-login-button{
     margin-left: 10px;
 }
 
@@ -61,6 +68,7 @@ form, .switch-to-login, .switch-to-signup, .login-area>.g_id_signin, .login-area
 .login-area-user div, .signup-area-user div, .login-area-user button, .signup-area-user button{
     display: flex;
     margin-bottom: 10px;
+    margin-right: 10px;
 }
 
 .title{
@@ -96,4 +104,21 @@ form, .switch-to-login, .switch-to-signup, .login-area>.g_id_signin, .login-area
 
 .log-out{
     display: none;
+}
+
+.login_submit, .signup_submit, .login_submit_user, .signup_submit_user{
+    background-color: #ddd;
+    border-radius: 10px;
+    padding: 5px;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    /*margin-left: auto;
+    margin-right: auto;*/
+    text-align: center;
+    border: none;
+}
+
+.login_submit:hover, .signup_submit:hover, .login_submit_user:hover, .signup_submit_user:hover{
+    cursor: pointer;
+    opacity: 0.8;
 }

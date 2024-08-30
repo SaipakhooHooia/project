@@ -185,6 +185,49 @@ input{
     background-color: none;
     border: 1px solid #ddd;
     border-radius: 10px;
+    margin-top: 10px;
+}
+
+select{
+    width: 200px;
+    height: 30px;
+    border: 0px;
+    background-color: none;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+button{
+    all: unset;
+    font-size: 20px;
+    padding: 5px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+    background-color: #ddd;
+}
+
+.agreement, .on-broad{
+    margin-bottom: 10px;
+}
+
+.on-broad{
+    margin-top: 10px;
+}
+
+.service-agreement{
+    color: blue;
+    text-decoration: underline;
+}
+
+.service-agreement:hover{
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    opacity: 0.8;
+    font-weight: bold;
 }
 
 .lence-icon{
@@ -192,6 +235,52 @@ input{
     background-image: url("/static/lence.png");
     width: 40px;
     height: 40px;
+}
+
+.agreement-content {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 2; 
+    box-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    width: 30%;
+    max-height: 70%;
+    overflow-y: auto;
+    transition: opacity 1s ease-out;
+    opacity: 1;
+}
+
+.hidden {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}
+
+.service-agreement-title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.cancelled{
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    float: right;
+}
+
+.cancelle:hover{
+    cursor: pointer;
+    opacity: 0.8;
 }
 
 .footer{
@@ -228,4 +317,109 @@ input{
 
 .message{
     display: block;
+}
+
+.on-broad input[type="checkbox"] {
+    position: absolute;
+    opacity: 0; 
+}
+
+.on-broad label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.on-broad label::before {
+    content: '';
+    display: inline-block;
+    width: 20px; 
+    height: 20px; 
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    margin-right: 8px; 
+    vertical-align: middle;
+    background-color: #fff; 
+    text-align: center;
+    line-height: 20px; 
+}
+
+.on-broad input[type="checkbox"]:checked + label::before {
+    content: '✔'; 
+    color: #007bff; 
+    border-color: #007bff; 
+    background-color: #e7f0ff; 
+}
+
+/**/
+.agreement input[type="checkbox"] {
+    position: absolute;
+    opacity: 0; 
+}
+
+.agreement label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.agreement label::before {
+    content: '';
+    display: inline-block;
+    width: 20px; 
+    height: 20px; 
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    margin-right: 8px; 
+    vertical-align: middle;
+    background-color: #fff; 
+    text-align: center;
+    line-height: 20px; 
+}
+
+.agreement input[type="checkbox"]:checked + label::before {
+    content: '✔'; 
+    color: #007bff; 
+    border-color: #007bff; 
+    background-color: #e7f0ff; 
+}
+
+/**/
+.agreement2 input[type="checkbox"] {
+    position: absolute;
+    opacity: 0; 
+}
+
+.agreement2 label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.agreement2 label::before {
+    content: '';
+    display: inline-block;
+    width: 20px; 
+    height: 20px; 
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    margin-right: 8px; 
+    vertical-align: middle;
+    background-color: #fff; 
+    text-align: center;
+    line-height: 20px; 
+}
+
+.agreement2 input[type="checkbox"]:checked + label::before {
+    content: '✔'; 
+    color: #007bff; 
+    border-color: #007bff; 
+    background-color: #e7f0ff; 
+}
+
+.service-time-title{
+    margin-bottom: 10px;
 }

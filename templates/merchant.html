@@ -10,7 +10,7 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="stylesheet" type="text/css" href="/static/signup.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
-  <title>Calender</title>
+  <title>Merchant</title>
 </head>
 <body>
     <div class = "header">
@@ -75,25 +75,41 @@
                     </select>
                 </div>
                 <div>
+                    <label for = "address">場地位址</label>
+                    <input placeholder = "場地位址" id = "address" name = "address">
+                </div>
+                <div>
+                    <label for = "google_map_src">場地位址連結</label>
+                    <input placeholder = "可提供Google map定位的連結" id = "google_map_src" name = "google_map_src">
+                </div>
+                <div>
                     <label for = "intro">場地描述</label>
                     <input placeholder = "場地描述" id = "intro" name = "intro">
+                </div>
+                <div>
+                    <label for = "supply">提供設備</label>
+                    <input placeholder = "提供設備" id = "supply" name = "supply">
+                </div>
+                <div>
+                    <label for = "note">注意事項</label>
+                    <input placeholder = "是否有特別注意事項" id = "note" name = "note">
                 </div>
                 <div>使用Gmail註冊</div>
                 <div id="g_id_onload"
                 data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
                 data-callback="onSignIn">
                 </div>
-                <div class="g_id_signin" data-type="standard"></div>
+                <div id="merchant-signup-button"></div>
                 <button type = "button" class = "signup_submit">送出</button>
             </form>
             <div class = "switch-to-login">已經有帳號了?直接登入</div>
-            <div class = "message"></div>
+            <div class = "user-signup-message"></div>
         </div>
         <div class = "login-area">
             <div class = "title">Login
                 <img class = "cancel" src = "/static/x_icon.png">
             </div>
-            <div class="g_id_signin" data-type="standard"></div>
+            <div id="merchant-login-button"></div>
             <button type = "button" class = "login_submit">送出</button>
             <div class = "switch-to-signup">還沒有帳號嗎?在此註冊</div>
             <div class = "message"></div>
@@ -118,7 +134,7 @@
                 data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
                 data-callback="onSignIn">
                 </div>
-                <div class="g_id_signin" data-type="standard"></div>
+                <div id="user-signup-button"></div>
                 <button type = "button" class = "signup_submit_user">送出</button>
             </form>
             <div class = "switch-to-login-user">已經有帳號了?直接登入</div>
@@ -128,7 +144,7 @@
             <div class = "title">Login
                 <img class = "cancel" src = "/static/x_icon.png">
             </div>
-            <div class="g_id_signin" data-type="standard"></div>
+            <div id="user-login-button"></div>
             <button type = "button" class = "login_submit_user">送出</button>
             <div class = "switch-to-signup-user">還沒有帳號嗎?在此註冊</div>
             <div class = "message"></div>
@@ -141,11 +157,34 @@
                 <div class = "merchant-info">
                     <strong class = "merchant-name"></strong>
                     <light class = "service-type"></light>
-                    <div class = "address"></div>
-                    <div class = "service-time-range">開放時間: </div>
-                    <div class = "intro">服務介紹: </div>
                     <div class = "contact"></div>
+                    <div class = "address">位址:</div>
+                    <div class="map-container">
+                        <iframe style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
                 </div>
+            </div>
+        </div>
+        <div class = "intro-container">
+            <div class = "service-time-range-container"> 
+                <img src = "/static/flower.png" class = "flower_icon">
+                <div class = "service-time-range">開放時間 </div>
+            </div>
+            <div class = "service-intro-container">
+                <img src = "/static/flower.png" class = "flower_icon">
+                <div class = "intro">服務介紹</div> 
+            </div>
+            <div class = "service-intro-container">
+                <img src = "/static/flower.png" class = "flower_icon">
+                <div>提供設備
+                    <div class = "supply"></div>
+                </div> 
+            </div>
+            <div class = "service-intro-container">
+                <img src = "/static/flower.png" class = "flower_icon">
+                <div>注意事項
+                    <div class = "note"></div>
+                </div> 
             </div>
         </div>
         <div class = "booking-area">
@@ -204,11 +243,24 @@
                     </div>
                 </div>
             </div>
+            <!--
             <div class = "selected-date">
                 <div class = "selected-date-title">預約紀錄</div>
                 <div class = "selected-time">目前沒有預約紀錄</div>
                 <div class = "button-wrapper">
                     <div class = "complete-button">完成預約</div>
+                </div>
+            </div>-->
+            <div class = "selectable-time">
+                <div class = "service-time">
+                    <div class = "selected-date-title">可預約時段</div>
+                </div>  
+                <div class = "list-container">
+                    <!--<div class = "add-to-list">加入時段</div>-->
+                    <div class = "check-list">查看已選時段</div>
+                </div>
+                <div class = "list">
+                    <div class = "reserve-time"></div>
                 </div>
             </div>
         </div>

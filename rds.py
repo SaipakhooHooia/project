@@ -8,6 +8,7 @@ import redis
 import json
 from datetime import datetime
 import time
+import mail_sending_func
 
 load_dotenv()
 
@@ -174,6 +175,11 @@ def get_data_in_json(keyword = None):
         m.phone_number,
         m.service_type,
         m.intro,
+        m.address,
+        m.google_map_src,
+        m.supply,
+        m.note,
+        m.on_broad,
         GROUP_CONCAT(DISTINCT CONCAT(sh.service_time_start, ',', sh.service_time_end, ',', sh.price, ',', sh.service_hour_name) SEPARATOR '|') AS service_hours
         FROM 
             merchants.merchant m
@@ -181,13 +187,17 @@ def get_data_in_json(keyword = None):
             merchants.service_hours sh
         ON 
             m.id = sh.merchant_ref_id
+        WHERE
+            m.on_broad = 1
         '''
         
     if keyword:
         sql += '''
-            WHERE m.merchant_name LIKE %s 
+            AND (
+            m.merchant_name LIKE %s 
             OR m.intro LIKE %s
             OR m.service_type LIKE %s
+            )
         '''
     
     sql += '''
@@ -209,13 +219,20 @@ def get_data_in_json(keyword = None):
             'phone_number' : result[3],
             'service_type' : result[4],
             'intro' : result[5],
-            'service_hours' : result[6]
+            'address' : result[6],
+            'google_map_src' : result[7],
+            'supply' : result[8],
+            'note' : result[9],
+            'on_broad' : result[10],
+            'service_hours' : result[11]
         }
     close_connection(mycursor, connection)
     if redis_client is not None:
         redis_client.setex(cache_key, 3600, json.dumps(data))
     return data
 
+print(get_data_in_json(keyword = '娛樂'))
+#print(get_data_in_json('林園撞球館'))
 def manage_data():
     connection = create_connection()
     mycursor = connection.cursor()
@@ -242,12 +259,17 @@ def manage_data():
 def delete_data(db, table, num):
     connection = create_connection()
     mycursor = connection.cursor()
-    sql = f"DELETE FROM {db}.{table} WHERE id < {num};"
-    mycursor.execute(sql)
-    connection.commit()
-    close_connection(mycursor, connection)
-    if redis_client is not None:
-        redis_client.delete(f"table_data:{db}:{table}")
+    try:
+        sql = f"DELETE FROM {db}.{table} WHERE id = {num};"
+        mycursor.execute(sql)
+        connection.commit()
+        close_connection(mycursor, connection)
+        if redis_client is not None:
+            redis_client.delete(f"table_data:{db}:{table}")
+        return {"message": "Data deleted successfully."}
+    except Error as e:
+        logging.error(f"Error deleting data from database: {e}")
+        close_connection(mycursor, connection)
 
 def show_databases():
     connection = create_connection()
@@ -259,7 +281,8 @@ def show_databases():
     for row in rows:
         print(row[0])
 
-def add_merchant(db, table, merchant_name, user_name, gmail, phone_number, merchant_id, service_type, intro):
+def add_merchant(db, table, merchant_name, user_name, gmail, phone_number, merchant_id, service_type, 
+                 intro, address, google_map_src, supply, note, on_broad):
     connection = create_connection()
     mycursor = connection.cursor()
     if connection is None:
@@ -269,19 +292,20 @@ def add_merchant(db, table, merchant_name, user_name, gmail, phone_number, merch
         if not check_merchant_exist(connection, db, table, merchant_name):
             sql = """
             INSERT IGNORE INTO {}.{} 
-            (merchant_name, user_name, gmail, phone_number, merchant_id, service_type, intro) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            (merchant_name, user_name, gmail, phone_number, merchant_id, service_type, intro, address, google_map_src, supply, note, on_broad) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """.format(db, table)
-            val = (merchant_name, user_name, gmail, phone_number, merchant_id, service_type, intro)
+            val = (merchant_name, user_name, gmail, phone_number, merchant_id, service_type, intro, address, google_map_src, supply, note, on_broad)
             mycursor.execute(sql, val)
             connection.commit()  # Commit the transaction
             logging.info("Add {} into {} success.".format(merchant_name, table))
             close_connection(mycursor, connection)
-            redis_client.delete(f"table_data:{db}:{table}")
-            redis_client.delete("merchant_data:all")
-            redis_client.delete(f"merchants:{gmail}")
-            delete_merchant_data_cache(service_type)
-            delete_merchant_data_cache(intro)
+            if redis_client is not None:
+                redis_client.delete(f"table_data:{db}:{table}")
+                redis_client.delete("merchant_data:all")
+                redis_client.delete(f"merchants:{gmail}")
+                delete_merchant_data_cache(service_type)
+                delete_merchant_data_cache(intro)
             return True
         else:
             logging.info("Merchant {} already exists.".format(merchant_name))
@@ -355,14 +379,27 @@ def append_service_hour(db, table, service_time_start, service_time_end, price, 
             connection.commit()
             logging.info(f"Added {service_hour_name} into {table} successfully.")
             close_connection(mycursor, connection)
-            redis_client.delete(f"table_data:{db}:{table}")
-            redis_client.delete("merchant_data:all")
+            if redis_client is not None:
+                redis_client.delete(f"table_data:{db}:{table}")
+                redis_client.delete("merchant_data:all")
         else:
             logging.error("Failed to connect to the database.")
     except Error as e:
         logging.error(f"Error in append_service_hour: {e}")
         if connection and connection.is_connected():
             connection.rollback()
+
+def update_on_broad(db, table, on_broad, id):
+    connection = create_connection()
+    mycursor = connection.cursor()
+    sql = f"UPDATE {db}.{table} SET on_broad = %s WHERE id = %s"
+    val = (on_broad, id)
+    mycursor.execute(sql, val)
+    connection.commit()
+    close_connection(mycursor, connection)
+    if redis_client is not None:
+        redis_client.delete(f"table_data:{db}:{table}")
+        redis_client.delete("merchant_data:all")
 
 def get_merchants_by_gmail(gmail):
     if redis_client is not None:
@@ -375,7 +412,8 @@ def get_merchants_by_gmail(gmail):
     connection = create_connection()
     mycursor = connection.cursor()
     sql = """
-    SELECT m.*, sh.*
+    SELECT m.merchant_name, m.user_name,m.phone_number, m.merchant_id, m.intro, m.address, m.google_map_src, m.supply, m.note, 
+    m.on_broad, sh.service_time_start, sh.service_time_end, sh.price, sh.service_hour_name
     FROM merchants.merchant m
     LEFT JOIN merchants.service_hours sh ON m.id = sh.merchant_ref_id
     WHERE m.gmail = %s;
@@ -385,22 +423,27 @@ def get_merchants_by_gmail(gmail):
     #print('rows:', rows)
     result = {}
     for row in rows:
-        merchant_name = row[1]
+        merchant_name = row[0]
         if merchant_name not in result:
             result[merchant_name] = {
-                "contact": row[2],
-                "phone_number": row[3],
-                "merchant_id": row[4],
-                "intro": row[6],
+                "contact": row[1],
+                "phone_number": row[2],
+                "merchant_id": row[3],
+                "intro": row[4],
+                "address": row[5],
+                "google_map_src": row[6],
+                "supply": row[7],
+                "note": row[8],
+                "on_broad": row[9],
                 "service_hours": [],
             }
         
         if row[9] is not None:
             result[merchant_name]["service_hours"].append({
-                "startTime": row[9],
-                "endTime": row[10],
-                "price": row[11],
-                "serviceHourName": row[12]
+                "startTime": row[10],
+                "endTime": row[11],
+                "price": row[12],
+                "serviceHourName": row[13]
             })
     if redis_client is not None:
         redis_client.setex(cache_key, 3600, json.dumps(result)) 
@@ -408,67 +451,82 @@ def get_merchants_by_gmail(gmail):
     return result
 
 #print(get_merchants_by_gmail('kawamotoiscute@gmail.com'))
+#print(get_merchants_by_gmail('kawamotoiscute@gmail.com'))
 def modify_data_by_lists(lst, gmail):
     connection = create_connection()
     mycursor = connection.cursor()
+    try:
+        for row in lst:
+            merchant_name = row[0][0]
+            old_value = row[1]
+            new_value = row[2]
+            
+            if len(row[0]) > 2:
+                # 更新 service_hours 表
+                if row[0][3] == 'startTime':
+                    cat = 'service_time_start'
+                elif row[0][3] == 'endTime':
+                    cat = 'service_time_end'
+                elif row[0][3] == 'price':
+                    cat = 'price'
+                elif row[0][3] == 'serviceHourName':
+                    cat = 'service_hour_name'
 
-    for row in lst:
-        merchant_name = row[0][0]
-        old_value = row[1]
-        new_value = row[2]
-        
-        if len(row[0]) > 2:
-            # 更新 service_hours 表
-            if row[0][3] == 'startTime':
-                cat = 'service_time_start'
-            elif row[0][3] == 'endTime':
-                cat = 'service_time_end'
-            elif row[0][3] == 'price':
-                cat = 'price'
-            elif row[0][3] == 'serviceHourName':
-                cat = 'service_hour_name'
-
-            # 生成 SQL 查询
-            sql = """
-                UPDATE merchants.service_hours
-                JOIN merchants.merchant ON service_hours.merchant_ref_id = merchant.id
-                SET service_hours.%s = %%s
-                WHERE merchant.merchant_name = %%s
-                AND service_hours.%s = %%s;
-            """ % (cat, cat)
-            val = (new_value, merchant_name, old_value)
-        
-        else:
-            # 更新 merchant 表
-            if row[0][1] == 'contact':
-                cat = 'user_name'
+                # 生成 SQL 查询
+                sql = """
+                    UPDATE merchants.service_hours
+                    JOIN merchants.merchant ON service_hours.merchant_ref_id = merchant.id
+                    SET service_hours.%s = %%s
+                    WHERE merchant.merchant_name = %%s
+                    AND service_hours.%s = %%s;
+                """ % (cat, cat)
+                val = (new_value, merchant_name, old_value)
+            
             else:
-                cat = row[0][1]
+                # 更新 merchant 表
+                if row[0][1] == 'contact':
+                    cat = 'user_name'
+                else:
+                    cat = row[0][1]
 
-            # 生成 SQL 查询
-            sql = """
-                UPDATE merchants.merchant
-                SET %s = %%s
-                WHERE merchant_name = %%s
-                AND %s = %%s;
-            """ % (cat, cat)
-            val = (new_value, merchant_name, old_value)
+                # 生成 SQL 查询
+                sql = """
+                    UPDATE merchants.merchant
+                    SET %s = %%s
+                    WHERE merchant_name = %%s
+                    AND %s = %%s;
+                """ % (cat, cat)
+                val = (new_value, merchant_name, old_value)
+            
+            print('SQL:', sql)
+            print('Values:', val)
+            
+            try:
+                mycursor.execute(sql, val)
+                connection.commit()
+                
+                if redis_client:
+                    redis_client.delete(f"merchant_data:{merchant_name}")
+            except Exception as e:
+                print(f"Error executing query: {e}")
+                close_connection(mycursor, connection)
+                return {"error": "Error updating data."}
+            
+            if redis_client:
+                try:
+                    redis_client.delete(f"merchants:all")
+                    redis_client.delete(f"merchants:{gmail}")
+                except Exception as e:
+                    print(f"Error deleting from Redis: {e}")
+                    close_connection(mycursor, connection)
         
-        print('SQL:', sql)
-        print('Values:', val)
-        
-        try:
-            mycursor.execute(sql, val)
-            connection.commit()
-            redis_client.delete(f"merchant_data:{merchant_name}")
-        except Exception as e:
-            print(f"Error executing query: {e}")
-            return False
-        if redis_client is not None:
-            redis_client.delete(f"merchants:all")
-            redis_client.delete(f"merchants:{gmail}")
-    close_connection(mycursor, connection)
-    return True
+        close_connection(mycursor, connection)
+        return {"message": "Data updated successfully."}
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        close_connection(mycursor, connection)
+        return {"error": "Error updating data."}
+
     #modify_lists: [[['IKEA展示間', 'intro'], '某間家具專賣店風格的民宿', '某間家具專賣店風格的民宿，非ikea直營店'], [['本能寺會客室', 'contact'], '織田信長', '織田先生'], [['林園撞球館', 'service_hours', 1, 'startTime'], '15:00', '16:00'], [['林園撞球館', 'service_hours', 1, 'endTime'], '19:00', '20:00']]
 
 def add_user(name_user, phone_number_user, gmail):
@@ -553,14 +611,18 @@ month_mapping = {
 
 def convert_date(date_str):
     try:
-        year, month_name, day = date_str.split('/')
-        month = month_mapping.get(month_name, "01")  # 默认返回01（1月）如果找不到匹配
-        return f"{year}-{month}-{day.zfill(2)}"
+        if '/' in date_str:
+            year, month_name, day = date_str.split('/')
+            month = month_mapping.get(month_name, "01")  # 默认返回01（1月）如果找不到匹配
+            return f"{year}-{month}-{day.zfill(2)}"
+        elif '-' in date_str:
+            return date_str
     except ValueError:
         print(f"Invalid date format: {date_str}")
         return None
     
-def place_order(order_list, order_id, prime, total_price, name_user_id, booking_phone_number, booking_name, booking_merchant, booking_gmail, is_paid, comment):
+def place_order(order_list, order_id, prime, total_price, name_user_id, booking_phone_number, booking_name, booking_merchant, 
+                booking_gmail, is_paid, comment, rec_trade_id, bank_transaction_id):
     connection = create_connection()
     mycursor = connection.cursor()
     try:
@@ -574,11 +636,11 @@ def place_order(order_list, order_id, prime, total_price, name_user_id, booking_
                 
                 sql = """ 
                 INSERT INTO merchants.orders (prime, booking_name_user, booking_phone_number_user, booking_gmail, order_number, booking_merchant, date,
-                time_start, time_end, service_time_name, price, total_price, name_user_id, is_paid, comment) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                time_start, time_end, service_time_name, price, total_price, name_user_id, is_paid, comment, rec_trade_id, bank_transaction_id) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
                 
                 val = (prime, booking_name, booking_phone_number, booking_gmail, order_id, booking_merchant, date, time_start, time_end, 
-                       service_time_name, price, total_price, name_user_id, is_paid, comment)
+                       service_time_name, price, total_price, name_user_id, is_paid, comment, rec_trade_id, bank_transaction_id)
                 mycursor.execute(sql, val)
         connection.commit()
 
@@ -621,7 +683,394 @@ def check_order():
 
     close_connection(mycursor, connection)
 
+def get_orders(gmail, category=None, keyword=None):
+    connection = create_connection()
+    mycursor = connection.cursor()
 
+    sql = """
+    SELECT m.merchant_name, m.service_type, o.id, o.prime, o.booking_name_user, o.booking_phone_number_user, o.booking_gmail, o.order_number, o.date,
+    o.time_start, o.time_end, o.service_time_name, o.price, o.total_price, o.is_paid, o.comment, o.order_time
+    FROM merchants.merchant m
+    LEFT JOIN merchants.orders o ON m.merchant_name = o.booking_merchant
+    WHERE m.gmail = %s
+    """
+    params = [gmail]
+    
+    if category is not None and keyword is not None:
+        sql += f" AND {category} LIKE %s"
+        params.append(f"%{keyword}%")
+    elif category is None and keyword is not None:
+        sql += """
+        AND (
+            m.merchant_name LIKE %s OR
+            o.prime LIKE %s OR
+            o.booking_name_user LIKE %s OR
+            o.booking_phone_number_user LIKE %s OR
+            o.booking_gmail LIKE %s OR
+            o.order_number LIKE %s OR
+            o.date LIKE %s OR
+            o.time_start LIKE %s OR
+            o.time_end LIKE %s OR
+            o.service_time_name LIKE %s OR
+            o.price LIKE %s OR
+            o.total_price LIKE %s OR
+            o.is_paid LIKE %s OR
+            o.comment LIKE %s OR
+            o.order_time LIKE %s
+        )
+        """
+        params.extend([f"%{keyword}%"] * 15)
+    sql += ";"
+
+    mycursor.execute(sql, params)
+    rows = mycursor.fetchall()
+
+    payload = []
+    for row in rows:
+        result = {
+            "merchant_name": row[0],
+            "order_id": row[2],
+            "prime": row[3],
+            "booking_name_user": row[4],
+            "booking_phone_number_user": row[5],
+            "booking_gmail": row[6],
+            "order_number": row[7],
+            "date": row[8],
+            "time_start": row[9],
+            "time_end": row[10],
+            "service_time_name": row[11],
+            "price": row[12],
+            "total_price": row[13],
+            "is_paid": row[14],
+            "comment": row[15]
+        }
+        payload.append(result)
+
+    close_connection(mycursor, connection)
+    return payload
+
+def check_time_overlap(mycursor, date,  merchant_name, order_id, time_changed):
+    sql = """
+        SELECT * FROM merchants.orders 
+        WHERE date = %s 
+        AND booking_merchant = %s 
+        AND (
+            (time_start < %s AND time_end > %s)
+            OR (time_start < %s AND time_end > %s)
+            OR (%s BETWEEN time_start AND time_end)
+            OR (%s BETWEEN time_start AND time_end)
+        )
+        AND id != %s;
+    """
+    val = (date, merchant_name, time_changed, time_changed, time_changed, time_changed, time_changed, time_changed, order_id)
+    mycursor.execute(sql, val)
+    return mycursor.fetchall()
+
+def send_email_data(clickedOrderId, mycursor, connection):
+    sql = "SELECT booking_name_user, booking_gmail,  booking_merchant, date, time_start, time_end FROM merchants.orders WHERE id = %s;"
+    val = (clickedOrderId,)
+    mycursor.execute(sql, val)
+    new_order = mycursor.fetchone()
+    booking_name = new_order[0]
+    booking_gmail = new_order[1]
+    booking_merchant = new_order[2]
+    date = new_order[3]
+    time_start = new_order[4]
+    time_end = new_order[5]
+    result = mail_sending_func.send_edit_order_mail(booking_name, booking_gmail, booking_merchant, date, 
+                                           time_start, time_end)
+    return result['statusCode']
+
+def edit_order(edit_diff, clickedOrderId, merchant_name):
+    connection = create_connection()
+    mycursor = connection.cursor()
+    print("edit_diff", edit_diff, clickedOrderId, merchant_name)
+    try:
+        if 'date' in edit_diff:
+            new_date = edit_diff['date']['new_value']
+            if 'time_start' in edit_diff:
+                time_conflict = check_time_overlap(mycursor, new_date, merchant_name, clickedOrderId, edit_diff['time_start']['new_value'])
+                if len(time_conflict) > 0:
+                    return {'error': '該時段已被預約,請重新選擇時間'}
+                else:
+                    sql = "UPDATE merchants.orders SET date = %s, time_start = %s WHERE id = %s;"
+                    val = (new_date, edit_diff['time_start']['new_value'], clickedOrderId)
+                    mycursor.execute(sql, val)
+                    connection.commit()
+                    statusCode = send_email_data(clickedOrderId, mycursor, connection)
+                    if statusCode == 200:
+                        sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                        val = (clickedOrderId, 1)
+                        mycursor.execute(sql, val)
+                        connection.commit()
+                        return {'message': '修改成功，客戶通知信寄件成功'}
+                    else:
+                        sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                        val = (clickedOrderId, 0)
+                        mycursor.execute(sql, val)
+                        connection.commit()
+                        return {'message': '修改成功，客戶通知信寄件失敗'}
+            if 'time_end' in edit_diff:
+                time_conflict = check_time_overlap(mycursor, new_date, merchant_name, clickedOrderId, edit_diff['time_end']['new_value'])
+                if len(time_conflict) > 0:
+                    return {'error': '該時段已被預約,請重新選擇時間'}
+                else:
+                    sql = "UPDATE merchants.orders SET date = %s, time_end = %s WHERE id = %s;"
+                    val = (new_date, edit_diff['time_end']['new_value'], clickedOrderId)
+                    mycursor.execute(sql, val)
+                    connection.commit()
+                    statusCode = send_email_data(clickedOrderId, mycursor, connection)
+                    if statusCode == 200:
+                        sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                        val = (clickedOrderId, 1)
+                        mycursor.execute(sql, val)
+                        connection.commit()
+                        return {'message': '修改成功，客戶通知信寄件成功'}
+                    else:
+                        sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                        val = (clickedOrderId, 0)
+                        mycursor.execute(sql, val)
+                        connection.commit()
+                        return {'message': '修改成功，客戶通知信寄件失敗'}
+            if 'time_start' not in edit_diff and 'time_end' not in edit_diff:
+                sql = "SELECT time_start, time_end FROM merchants.orders WHERE id = %s;"
+                val = (clickedOrderId,)
+                mycursor.execute(sql, val)
+                old_time = mycursor.fetchone()
+                old_time_start = old_time[0]
+                old_time_end = old_time[1]
+                time_conflict = check_time_overlap(mycursor, new_date, merchant_name, clickedOrderId, old_time_start)
+                time_conflict2 = check_time_overlap(mycursor, new_date, merchant_name, clickedOrderId, old_time_end)
+                if len(time_conflict) > 0 or len(time_conflict2) > 0:
+                    return {'error': '該時段已被預約,請重新選擇時間'}
+                else:
+                    sql = "UPDATE merchants.orders SET date = %s WHERE id = %s;"
+                    val = (new_date, clickedOrderId)
+                    mycursor.execute(sql, val)
+                    connection.commit()
+                    statusCode = send_email_data(clickedOrderId, mycursor, connection)
+                    if statusCode == 200:
+                        sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                        val = (clickedOrderId, 1)
+                        mycursor.execute(sql, val)
+                        connection.commit()
+                        return {'message': '修改成功，客戶通知信寄件成功'}
+                    else:
+                        sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                        val = (clickedOrderId, 0)
+                        mycursor.execute(sql, val)
+                        connection.commit()
+                        return {'error': '修改成功，客戶通知信寄件失敗'}
+        if 'date' not in edit_diff and ('time_start' in edit_diff or 'time_end' in edit_diff):
+                sql = "SELECT date FROM merchants.orders WHERE id = %s;"
+                val = (clickedOrderId,)
+                mycursor.execute(sql, val)
+                old_date = mycursor.fetchone()[0]
+                if 'time_start' in edit_diff:
+                    time_conflict = check_time_overlap(mycursor, old_date, merchant_name, clickedOrderId, edit_diff['time_start']['new_value'])
+                    if len(time_conflict) > 0:
+                        return {'error': '該時段已被預約,請重新選擇時間'}
+                    else:
+                        sql = "UPDATE merchants.orders SET time_start = %s WHERE id = %s;"
+                        val = (edit_diff['time_start']['new_value'], clickedOrderId)
+                        mycursor.execute(sql, val)
+                        connection.commit()
+                        statusCode = send_email_data(clickedOrderId, mycursor, connection)
+                        if statusCode == 200:
+                            sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                            val = (clickedOrderId, 1)
+                            mycursor.execute(sql, val)
+                            connection.commit()
+                            return {'message': '修改成功，客戶通知信寄件成功'}
+                        else:
+                            sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                            val = (clickedOrderId, 0)
+                            mycursor.execute(sql, val)
+                            connection.commit()
+                            return {'error': '修改成功，客戶通知信寄件失敗'}
+                if 'time_end' in edit_diff:
+                    time_conflict = check_time_overlap(mycursor, old_date, merchant_name, clickedOrderId, edit_diff['time_end']['new_value'])
+                    if len(time_conflict) > 0:
+                        return {'error': '該時段已被預約,請重新選擇時間'}
+                    else:
+                        sql = "UPDATE merchants.orders SET time_end = %s WHERE id = %s;"
+                        val = (edit_diff['time_end']['new_value'], clickedOrderId)
+                        mycursor.execute(sql, val)
+                        connection.commit()
+                        statusCode = send_email_data(clickedOrderId, mycursor, connection)
+                        if statusCode == 200:
+                            sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                            val = (clickedOrderId, 1)
+                            mycursor.execute(sql, val)
+                            connection.commit()
+                            return {'message': '修改成功，客戶通知信寄件成功'}
+                        else:
+                            sql = "INSERT INTO merchants.edit_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+                            val = (clickedOrderId, 0)
+                            mycursor.execute(sql, val)
+                            connection.commit()
+                            return {'error': '修改成功，客戶通知信寄件失敗'}
+                        
+        if 'booking_name_user' in edit_diff:
+            sql = "UPDATE merchants.orders SET booking_name_user = %s WHERE id = %s;"
+            val = (edit_diff['booking_name_user']['new_value'], clickedOrderId)
+            mycursor.execute(sql, val)
+            connection.commit()
+        if 'booking_phone_number_user' in edit_diff:
+            sql = "UPDATE merchants.orders SET booking_phone_number_user = %s WHERE id = %s;"
+            val = (edit_diff['booking_phone_number_user']['new_value'], clickedOrderId)
+            mycursor.execute(sql, val)
+            connection.commit()
+        if 'booking_gmail' in edit_diff:
+            sql = "UPDATE merchants.orders SET booking_gmail = %s WHERE id = %s;"
+            val = (edit_diff['booking_gmail']['new_value'], clickedOrderId)
+            mycursor.execute(sql, val)
+            connection.commit()
+
+        return {'message': '修改成功'}
+    except OperationalError as e:
+        logging.error("OperationalError: %s", e)
+        return {'error': f'OperationalError: {e}'}
+    except Exception as e:
+        logging.error("Error: %s", e)
+        return {'error': f'Error: {e}'}
+    finally:
+        close_connection(mycursor, connection)
+
+def delete_order(order_id):
+    connection = create_connection()
+    mycursor = connection.cursor()
+    try:
+        sql = f"DELETE FROM merchants.password_mail WHERE order_id = {order_id};"
+        mycursor.execute(sql)
+        connection.commit()
+        sql = "SELECT booking_name_user, booking_gmail,  booking_merchant, date, time_start, time_end FROM merchants.orders WHERE id = %s;"
+        mycursor.execute(sql, (order_id,))
+        row = mycursor.fetchone()
+        booking_name_user = row[0]
+        booking_gmail = row[1]
+        booking_merchant = row[2]
+        date = row[3]
+        time_start = row[4]
+        time_end = row[5]
+        sql = f"DELETE FROM merchants.orders WHERE id = {order_id};"
+        mycursor.execute(sql)
+        connection.commit()
+        close_connection(mycursor, connection)
+        if redis_client is not None:
+            redis_client.delete(f"table_data:merchants:orders")
+        statusCode = mail_sending_func.send_delete_order_mail(booking_name_user, booking_gmail, booking_merchant, date, time_start, time_end)
+        if statusCode == 200:
+            sql = "INSERT INTO merchants.delete_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+            val = (order_id, 1)
+            mycursor.execute(sql, val)
+            connection.commit()
+            return {"message": "訂單刪除成功，客戶通知信寄件成功"}
+        else:
+            sql = "INSERT INTO merchants.delete_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+            val = (order_id, 0)
+            mycursor.execute(sql, val)
+            connection.commit()
+            return {"message": "訂單刪除成功，客戶通知信寄件失敗"}
+        #return {"message": "Data deleted successfully."}
+    except Error as e:
+        logging.error(f"Error deleting data from database: {e}")
+        close_connection(mycursor, connection)
+        return {"error": f"Error deleting data from database: {e}"}
+    
+def get_rec_trade_id_and_amount(order_id):
+    connection = create_connection()
+    mycursor = connection.cursor()
+    try:
+        sql = "SELECT prime, rec_trade_id, total_price FROM merchants.orders WHERE id = %s;"
+        mycursor.execute(sql, (order_id,))
+        row = mycursor.fetchone()
+        prime = row[0]
+        rec_trade_id = row[1]
+        total_price = row[2]
+        sql = "UPDATE merchants.orders SET is_paid = %s WHERE prime = %s;"
+        val = ("已退款", prime)
+        mycursor.execute(sql, val)
+        connection.commit()
+        return {"prime": prime, "rec_trade_id": rec_trade_id, "total_price": total_price}
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        close_connection(mycursor, connection)
+        return None
+
+def refund_order(clickedOrderId, price):
+    connection = create_connection()
+    mycursor = connection.cursor()
+    try:
+        sql = "INSERT INTO merchants.refund (order_id, price) VALUES (%s, %s);"
+        val = (clickedOrderId, price)
+        mycursor.execute(sql, val)
+        connection.commit()
+        sql = "SELECT prime, rec_trade_id, total_price FROM merchants.orders WHERE id = %s;"
+        mycursor.execute(sql, (clickedOrderId,))
+        row = mycursor.fetchone()
+        prime = row[0]
+        sql = "UPDATE merchants.orders SET is_paid = %s WHERE prime = %s;"
+        val = (2, prime)
+        mycursor.execute(sql, val)
+        connection.commit()
+        sql = "SELECT booking_name_user, booking_gmail,  booking_merchant, date, time_start, time_end, total_price FROM merchants.orders WHERE prime = %s;"
+        mycursor.execute(sql, (prime,))
+        rows = mycursor.fetchall()
+        close_connection(mycursor, connection)
+        mail_datas = []
+        for row in rows:
+            mail_data = {
+                'booking_name_user': row[0],
+                'booking_gmail': row[1],
+                'booking_merchant': row[2],
+                'date': row[3],
+                'time_start': row[4],
+                'time_end': row[5],
+                'total_price': row[6]
+            }
+            mail_datas.append(mail_data) 
+        statusCode = mail_sending_func.send_refund_order_mail(mail_datas)
+        if statusCode == 200:
+            sql = "INSERT INTO merchants.refund_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+            val = (clickedOrderId, 1)
+            mycursor.execute(sql, val)
+            connection.commit()
+            return {"message": "退款成功，客戶通知信寄件成功"}
+        else:
+            sql = "INSERT INTO merchants.refund_order_inform_mail (order_id, notification_sent) VALUES (%s, %s);"
+            val = (clickedOrderId, 0)
+            mycursor.execute(sql, val)
+            connection.commit()
+            return {"message": "退款成功，客戶通知信寄件失敗"}
+        #return {"message": "退款成功"}
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        close_connection(mycursor, connection)
+        logging.error(f"Error executing query: {e}")
+        return {"error": f"Error executing query: {e}"}
+    
+def get_future_orders(merchant_name):
+    connection = create_connection()
+    mycursor = connection.cursor()
+    try:
+        sql = "SELECT date, time_start, time_end FROM merchants.orders WHERE booking_merchant = %s AND date >= DATE(NOW()) AND is_paid = 1;"
+        mycursor.execute(sql, (merchant_name,))
+        rows = mycursor.fetchall()
+        results = {}
+        for row in rows:
+            results[str(row[0])] = {"time_start": row[1], "time_end": row[2]}
+        close_connection(mycursor, connection)
+        print(results)
+        return rows
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        close_connection(mycursor, connection)
+        logging.error(f"Error executing query: {e}")
+
+get_future_orders('林園撞球館')
+#print(get_orders('kawamotoiscute@gmail.com', 'm.merchant_name', "林園"))
+#get_orders('kawamotoiscute@gmail.com')
 #new_mails = mycursor.fetchall()
 #print(new_mails)
 #check_order()

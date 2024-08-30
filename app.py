@@ -59,6 +59,10 @@ async def root(request: Request):
 async def root(request: Request):
     return templates.TemplateResponse("booking.html", {"request": request})
 
+@app.get("/signup", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
+
 @app.post("/tokensignin")
 async def token_signin(request: Request):
     data = await request.json()
@@ -93,13 +97,18 @@ async def signup(request: Request):
     merchant_id = data.get("merchant_id")
     service_type = data.get("service_type")
     intro = data.get("intro")
+    address = data.get("address")
+    google_map_src = data.get("google_map_src")
+    supply = data.get("supply")
+    note = data.get("note")
     s3.create_folder("examplebucket10101010", merchant_name+"/")
 
     print(data)
 
     add_merchant_result = rds.add_merchant(db = "merchants", table = "merchant", merchant_name = merchant_name, 
                      user_name = user_name, gmail = gmail, phone_number = phone_number, 
-                     merchant_id = merchant_id, service_type = service_type, intro = intro)
+                     merchant_id = merchant_id, service_type = service_type, intro = intro ,
+                     address = address, google_map_src = google_map_src, supply = supply, note = note, on_broad = False)
     if add_merchant_result != True:
         return {"error":"Merchant already exists"}
     merchant_db_id = rds.get_id(db = "merchants", table = "merchant", merchant_name = merchant_name)
@@ -181,12 +190,26 @@ async def merchant_setting(request: Request , service_hour : Optional[str] = For
         print("decode_token:", decode_token)
         print("merchant_ref_id:", merchant_ref_id)
         print("decode_token[\"merchant_db_id\"]:", decode_token["merchant_db_id"])
+        on_broad = service_hour_dict.get('merchant_on_broad', False)
+        agreement = service_hour_dict.get('agreement', False)
+        print("merchant_on_broad:", on_broad)
+        print("agreement:", agreement)
         for key, value in service_hour_dict.items():
-             print(key, value)
-             print("merchant_ref_id:", merchant_ref_id)
-             rds.append_service_hour(db="merchants", table="service_hours", service_time_start=value["start"], 
-                                service_time_end=value["end"], price=value["price"], 
-                                service_hour_name=value["name"], merchant_ref_id=merchant_ref_id)
+            if isinstance(value, dict) and 'start' in value:
+                print(key, value)
+                print("merchant_ref_id:", merchant_ref_id)
+                print("service_time_start:", value["start"])
+                print("service_time_end:", value["end"])
+                rds.append_service_hour(
+                    db="merchants",
+                    table="service_hours",
+                    service_time_start=value["start"],
+                    service_time_end=value["end"],
+                    price=value["price"],
+                    service_hour_name=value["name"],
+                    merchant_ref_id=merchant_ref_id
+                )
+                rds.update_on_broad(db="merchants", table="merchant", on_broad=on_broad, id=merchant_ref_id)
 
     return{"ok":True}
 
@@ -229,18 +252,17 @@ async def get_merchant(merchant_name : str):
     data_result = rds.get_data_in_json(keyword = merchant_name)
     image_result = s3.list_images_in_folders("examplebucket10101010", *data_result.keys())
     calender_data = test_calender()
+    order_data = rds.get_future_orders(merchant_name)
     for key, images in zip(data_result.keys(), image_result):
         data_result[key]['images'] = images
         data_result[key]['calender'] = calender_data
-    
+    data_result['order_history'] = order_data
     #print("data_result type:",type(data_result))
     return data_result
 
 @app.get("/api/merchant_auth")
 async def auth(request: Request):
-    #print("Request headers:", request.headers)
     authorization = request.headers.get("Authorization")
-    #print("Authorization Header:", authorization)
     try:
         decode_token = jwt_token.Merchant.jwt_decode(authorization)
         user_gmail = decode_token['gmail']
@@ -253,6 +275,7 @@ async def auth(request: Request):
 @app.post("/api/update_merchant_data")
 async def update_merchant_data(request: Request):
     data = await request.json()
+    print(data)
     original_data = data[0]
     modify_data = data[1]
     token = data[2]
@@ -310,22 +333,18 @@ async def booking(request: Request):
     data = await request.json()
     
     print("Data received:")
-    print(data)  # 打印整个 data 对象以检查其结构
+    print(data)  
 
     try:
-        # 解析 reservation 字符串
         reservation_str = data["order"]["reservation"]
-        reservation_dict = json.loads(reservation_str)  # 将字符串解析为字典
+        reservation_dict = json.loads(reservation_str)  
 
-        # 打印解析后的 reservation 数据
         print(f"Type of reservation_dict: {type(reservation_dict)}")
         print(f"Contents of reservation_dict: {reservation_dict}")
 
-        # 提取 reservations 部分
         order_list = reservation_dict["reservations"]
         print(f"Parsed order_list: {order_list}")
 
-        # 继续处理数据
         verify_result = verify_order(data['order'])
         if verify_result != True:
             return verify_result
@@ -372,8 +391,10 @@ async def booking(request: Request):
                         booking_merchant=reservation_dict['merchant_name'],
                         booking_name=data["order"]["name"],
                         booking_gmail=data["order"]["gmail"],
-                        is_paid=True,
-                        comment=None
+                        is_paid=1,
+                        comment=None,
+                        rec_trade_id = response_data.get("rec_trade_id"),
+                        bank_transaction_id = response_data.get("bank_transaction_id")
                     )
                     return {"message": "Payment success", "data": str(order_id)}
                 else:
@@ -388,8 +409,10 @@ async def booking(request: Request):
                         booking_merchant=reservation_dict['merchant_name'],
                         booking_name=data["order"]["name"],
                         booking_gmail=data["order"]["gmail"],
-                        is_paid=False,
-                        comment=response_data.get('msg')
+                        is_paid=0,
+                        comment=response_data.get('msg'),
+                        rec_trade_id = response_data.get("rec_trade_id"),
+                        bank_transaction_id = response_data.get("bank_transaction_id")
                     )
                     return {"error": "Payment failed", "message": response_data.get("msg")}
             else:
@@ -404,8 +427,10 @@ async def booking(request: Request):
                     booking_merchant=reservation_dict['merchant_name'],
                     booking_name=data["order"]["name"],
                     booking_gmail=data["order"]["gmail"],
-                    is_paid=False,
-                    comment=f"HTTP 錯誤: {response.status_code}"
+                    is_paid=0,
+                    comment=f"HTTP 錯誤: {response.status_code}",
+                    rec_trade_id = response_data.get("rec_trade_id"),
+                    bank_transaction_id = response_data.get("bank_transaction_id")
                 )
                 return {"error": "HTTP error", "status_code": response.status_code}
         else:
@@ -413,6 +438,91 @@ async def booking(request: Request):
     except Exception as e:
         print("Error:", str(e))
         return {"error": "處理請求時發生錯誤", "message": str(e)}
+
+@app.get("/api/get_orders")
+async def get_orders(request: Request, category : Optional[str] = Query(None), keyword : Optional[str] = Query(None)):
+    authorization = request.headers.get("Authorization")
+    if category is not None or keyword is not None:
+        print(category, keyword)
+    decode_token = jwt_token.Merchant.jwt_decode(authorization)
+    if decode_token:
+        merchant_name = decode_token["merchant_name"]
+        gmail = decode_token["gmail"]
+    if category == "blur":
+        print(category, keyword)
+        result = rds.get_orders(gmail = gmail, category = None,keyword = keyword)
+    elif category is not None and keyword is not None:
+        result = rds.get_orders(gmail, category, keyword)
+    else:
+        result = rds.get_orders(gmail)
+    #print("result:", result)
+    return result
+
+@app.put("/api/edit_order/{clickedOrderId}")
+async def edit_order(request: Request, clickedOrderId : str):
+    authorization = request.headers.get("Authorization")
+    request_body = await request.json()
+    original_data = request_body[0]
+    new_data = request_body[1]
+    merchant_name = original_data["merchant_name"]
+    decode_token = jwt_token.Merchant.jwt_decode(authorization)
+    if decode_token:
+        gmail = decode_token["gmail"]
+        diff_dict = DeepDiff(original_data, new_data, verbose_level=2)
+        if diff_dict and gmail:
+            diff = diff_dict['values_changed']
+            edit_diff = {}
+            for key in diff.keys():
+                categories = key.replace("root['", "").replace("']", "")
+                edit_diff[categories] = diff[key]
+    result = rds.edit_order(edit_diff, clickedOrderId, merchant_name)
+    return result
+
+@app.delete("/api/delete_order/{clickedOrderId}")   
+async def delete_order(request: Request, clickedOrderId : str):
+    authorization = request.headers.get("Authorization")
+    decode_token = jwt_token.Merchant.jwt_decode(authorization)
+    if decode_token:
+        result = rds.delete_order(clickedOrderId)
+    return result
+
+@app.put("/api/refund_order/{clickedOrderId}")
+async def refund_order(request: Request, clickedOrderId : str):
+    authorization = request.headers.get("Authorization")
+    decode_token = jwt_token.Merchant.jwt_decode(authorization)
+    if decode_token:
+        result = rds.get_rec_trade_id_and_amount(clickedOrderId)
+        prime = result['prime']
+        rec_trade_id = result['rec_trade_id']
+        total_price = result['total_price']
+        print("prime:", prime)
+        print("refund amount:", total_price)
+        url = "https://sandbox.tappaysdk.com/tpc/transaction/refund"
+        merchant_id = "tppf_MidoriTapPay_GP_POS_3"
+    
+        headers = {
+            "Content-Type": "application/json",
+            "x-api-key": partner_key,
+        }
+
+        payload = {
+            "partner_key": partner_key,
+            "merchant_id": merchant_id,
+            "rec_trade_id": rec_trade_id,
+            "amount": total_price
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 200:
+            response_data = response.json()
+            print('response_data:', response_data)
+            if response_data.get('msg') == 'Success':
+                result = rds.refund_order(clickedOrderId, total_price)
+            else:
+                result = {"Tappay refund error": response_data.get('msg')}
+        else:
+            print(f"HTTP 錯誤: {response.status_code}")
+            return {"error": "HTTP error", "status_code": response.status_code}
 
 if __name__ == "__main__":
     import uvicorn

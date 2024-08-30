@@ -7,6 +7,31 @@ document.querySelector(".add").addEventListener("click", () => {
     addTimeGroup();
 })
 
+document.querySelector(".service-agreement").addEventListener("click", () => {
+    let agreementContent = document.querySelector(".agreement-content");
+    agreementContent.style.display = "block";
+    agreementContent.classList.remove("hidden");
+    agreementContent.style.visibility = "visible";
+});
+
+document.querySelector(".cancelled").addEventListener("click", () => {
+    document.querySelector(".agreement-content").style.display = "none";
+});
+
+document.querySelector(".agreement-checkbox2").addEventListener("change", () => {
+    if (document.querySelector(".agreement-checkbox2").checked === true) {
+        document.querySelector(".agreement-checkbox").checked = true;
+        let agreementContent = document.querySelector(".agreement-content");
+        agreementContent.classList.add("hidden");
+
+        setTimeout(() => {
+            agreementContent.style.visibility = "hidden";
+            agreementContent.style.display = "none";
+        }, 1000); 
+    };
+});
+
+
 function selector(elements){  
     let select = document.querySelectorAll(elements);
     for (let element of select) {
@@ -135,6 +160,17 @@ document.querySelector(".submit").addEventListener("click", async (event) => {
         };
     });
 
+    let merchantOnBroad = document.querySelector(".on-broad-checkbox").checked;
+    let agreement = document.querySelector(".agreement-checkbox").checked;
+
+    if(!agreement){
+        alert("請勾選同意條款");
+        return;
+    }
+
+    payload['merchant_on_broad'] = merchantOnBroad;
+    payload['agreement'] = agreement;
+
     formData.append('service_hour', JSON.stringify(payload));
 
     console.log(formData.get("service_hour"));
@@ -193,7 +229,6 @@ function readURL(input) {
                 let width = img.width;
                 let height = img.height;
 
-                // 計算縮小後的尺寸
                 if (width > height) {
                     if (width > maxWidth) {
                         height *= maxWidth / width;

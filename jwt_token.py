@@ -40,7 +40,6 @@ class Merchant:
             raise HTTPException(status_code=500, detail=Error_message(error=True, message="500 internal server error.").model_dump())
 
     #{'merchant_name': 'hello', 'user_name': 'midori', 'gmail': 'kawamotoiscute@gmail.com', 'merchant_db_id': 13}
-
 class User:
     @staticmethod 
     def jwt_encode(name_user, phone_number_user, gmail, user_id):
@@ -64,7 +63,3 @@ class User:
         except Exception as e:
             raise HTTPException(status_code=500, detail=Error_message(error=True, message="500 internal server error.").model_dump())
 
-#print(User.jwt_decode('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lX3VzZXIiOiJcdTk2M2ZcdTdmZDQiLCJwaG9uZV9udW1iZXJfdXNlciI6IjA5MDAiLCJnbWFpbCI6ImI5OTYwMjAyMEBnbWFpbC5jb20iLCJ1c2VyX2lkIjo0fQ.pQetokp27ZLjpcckVdtXEBTUwAuoSxPl1y_P0EyWy4k'))
-#{'name_user': '阿翔', 'phone_number_user': '0900', 'gmail': 'b99602020@gmail.com', 'user_id': 4}
-#print(User.jwt_decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lX3VzZXIiOiJNaWRvcmkiLCJwaG9uZV9udW1iZXJfdXNlciI6IjA5Nzk4NTQ2MzIiLCJnbWFpbCI6Imthd2Ftb3RvaXNjdXRlQGdtYWlsLmNvbSIsInVzZXJfaWQiOjN9.GPe2tgTf5PI70eaRrWfUgY-g-i1LeRdCQ1tnX7FhHvo"))
-#{'name_user': 'Midori', 'phone_number_user': '0979854632', 'gmail': 'kawamotoiscute@gmail.com', 'user_id': 3}

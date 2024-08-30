@@ -1,60 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-signin-client_id" content="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <link rel="stylesheet" type="text/css" href="/static/signup.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
-  <title>Signup Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sign-In Example</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-    <div class = "wrapper">
-        <div class = "signup-area">
-            <div>Sign Up</div>
-            <form>
-                <label for = "merchant-name">商家名稱</label>
-                <input placeholder = "請輸入商家名稱" id = "merchant-name" name = "merchant-name">
-                <br>
-                <label for = "user-name">聯絡人姓名</label>
-                <input placeholder = "聯絡人姓名" id = "user-name" name = "user-name">
-                <br>
-                <label for = "phone-number">連絡電話</label>
-                <input placeholder = "連絡電話" id = "phone-number" name = "phone-number">
-                <br>
-                <label for = "merchant-id">Tappay商家ID</label>
-                <input placeholder = "Tappay商家ID" id = "merchant-id" name = "merchant-id">
-                <br>
-                <label for = "service-type">租借類型</label>
-                <select id = "service-type" name = "service-type">
-                    <option value = "辦公">辦公</option>
-                    <option value = "民宿">民宿</option>
-                    <option value = "藝術">藝術</option>
-                    <option value = "娛樂">娛樂</option>
-                    <option value = "運動">運動</option>
-                </select>
-                <br>
-                <label for = "intro">場地描述</label>
-                <input placeholder = "場地描述" id = "intro" name = "intro">
-                <br>
-                <div>使用Gmail註冊</div>
-                <div id="g_id_onload"
-                data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
-                data-callback="onSignIn">
-                </div>
-                <div class="g_id_signin" data-type="standard"></div>
-                <button type = "button" class = "signup_submit">送出</button>
-            </form>
-            <div class = "switch-to-login">已經有帳號了?直接登入</div>
-        </div>
-        <div class = "login-area">
-            <div>Login</div>
-            <div class="g_id_signin" data-type="standard"></div>
-            <button type = "button" class = "login_submit">送出</button>
-            <div class = "switch-to-signup">還沒有帳號嗎?在此註冊</div>
-        </div>
-    </div>
-  <script src = "/static/signup.js" defer></script>
+    <h1>Google Sign-In Example</h1>
+    
+    <!-- 登錄按鈕容器 -->
+    <div id="buttonDiv"></div>
+    
+    <!-- 顯示用戶信息的區域
+    <div id="userInfo" style="display:none;">
+        <h2>User Information</h2>
+        <p>Name: <span id="userName"></span></p>
+        <p>Email: <span id="userEmail"></span></p>
+        <button onclick="signOut()">Sign Out</button>
+    </div> -->
+
+    <script>
+        function handleCredentialResponse(response) {
+            // 解碼 JWT token
+            const responsePayload = decodeJwtResponse(response.credential);
+
+            console.log("ID: " + responsePayload.sub);
+            console.log('Full Name: ' + responsePayload.name);
+            console.log('Given Name: ' + responsePayload.given_name);
+            console.log('Family Name: ' + responsePayload.family_name);
+            console.log("Image URL: " + responsePayload.picture);
+            console.log("Email: " + responsePayload.email);
+
+            // 顯示用戶信息
+            document.getElementById('userName').textContent = responsePayload.name;
+            document.getElementById('userEmail').textContent = responsePayload.email;
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('buttonDiv').style.display = 'none';
+        }
+
+        function decodeJwtResponse(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com",
+                callback: handleCredentialResponse
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("buttonDiv"),
+                { theme: "outline", size: "large" }  // 自定義按鈕外觀
+            );
+            google.accounts.id.prompt(); // 顯示 One Tap 登錄提示
+        }
+
+        function signOut() {
+            google.accounts.id.disableAutoSelect();
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('buttonDiv').style.display = 'block';
+        }
+    </script>
 </body>
 </html>

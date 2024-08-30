@@ -413,6 +413,8 @@ input{
 
 .merchant-info{
     position: absolute;
+    display: flex;
+    flex-direction: column;
     right: 10%;
     top: 290px;
     height: 400px;
@@ -427,7 +429,7 @@ input{
 
 .booking-area{
     width: 100%;
-    margin-top: 40px;
+    /*margin-top: 40px;*/
     display: flex;
 }
 
@@ -437,7 +439,7 @@ input{
     border: 1px solid #ddd;
 }
 
-.selected-date{
+.selected-date, .selectable-time{
     margin-left: 20px;
     height: 100%;
     width: 50%;
@@ -475,4 +477,179 @@ input{
 .selected-date-title{
     background-color: #ddd;
     margin-bottom: 10px;
+}
+
+.service-hour-range{
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    width: 60%;
+    text-align: center;
+    font-size: 1.5rem;
+    transition: background-color 0.5s;
+    transition: opacity 0.3s;
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+
+.service-hour-range:hover{
+    cursor: pointer;
+    background-color: #e0f2c6;
+    opacity: 0.5;
+}
+
+.service-hour-range:active{
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.service-time{
+    width: 100%;
+}
+
+.clicked{
+    background-color: #e0f2c6;
+}
+
+.cancelled{
+    opacity: 0.5;
+    color: #ddd;
+    cursor: not-allowed;
+}
+
+.cancelled:hover{
+    cursor: not-allowed;
+    background-color: #ffffff;
+}
+
+.list-container{
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+}
+
+
+.list-container div {
+    background-color: #ddd;
+    border-radius: 10px;
+    width: auto;
+    padding: 5px;
+    font-size: 1.25rem;
+}
+
+.go-to-check {
+    background-color: #ddd;
+    border-radius: 10px;
+    padding: 5px;
+    font-size: 1.25rem;
+    width: 90px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.list-container div:hover, .go-to-check:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+/*.list-container :first-child{
+    margin-right: 5rem;
+}*/
+
+.list {
+    display: none;
+    position: absolute;
+    width: 30%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #ccc;
+    background-color: #fff;
+    /*padding: 10px;*/
+    border-radius: 10px;  
+    max-height: 70%;
+    overflow-y: auto; 
+}
+
+.reserve-title{
+    background-image: url("/static/logo_background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+    color: #fff;
+    text-shadow:  rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    padding: 10px;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.date-card {
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.reservation-card {
+    margin-bottom: 10px;
+    background-color: #f0f0f0;
+    padding: 5px;
+}
+
+.reservation-card div {
+    font-size: 1rem;
+}
+
+.reserve-date {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.fa-xmark {
+    float: right;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.fa-xmark:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.map-container {
+    flex: 1; 
+}
+
+.map-container iframe {
+    width: 70%;
+    height: 100%; 
+    border: none; 
+}
+
+.intro-container{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.service-time-range, .intro, .supply{
+    margin-bottom: 10px;
+}
+
+.flower_icon {
+    width: 2rem !important;
+    height: 2rem !important;
+}
+
+.service-time-range-container, .service-intro-container {
+    display: flex;
+}
+
+.merchant-name {
+    font-size: 2rem;
 }

@@ -587,8 +587,9 @@ function slideImages() {
     let totalImages = images.length;
 
     setInterval(() => {
+        const slideWidth = window.matchMedia('(max-width: 1000px)').matches ? 400 : 600;
         currentIndex = (currentIndex + 1) % totalImages;
-        imageContainer.style.transform = `translateX(-${600 * currentIndex}px)`;
+        imageContainer.style.transform = `translateX(-${slideWidth * currentIndex}px)`;
     }, 3000); 
 };
 
@@ -598,7 +599,8 @@ function caculateMerchantInfoWidth() {
     let imgWrapper = document.querySelector(".image-wrapper");
     //console.log("merchantInforContainer.offsetWidth:", merchantInfoContainer.offsetWidth);
     //console.log("imgWrapper.offsetWidth:", imgWrapper.offsetWidth);
-    merchantInfo.style.width = `${merchantInfoContainer.offsetWidth - imgWrapper.offsetWidth - 20}px`;
+    const gapWidth = window.matchMedia('(max-width: 1000px)').matches ? 20 : 30;
+    merchantInfo.style.width = `${merchantInfoContainer.offsetWidth - imgWrapper.offsetWidth - gapWidth}px`;
 };
 
 function renderMerchantInfo(fetchData, serviceHourList){
@@ -639,7 +641,7 @@ function renderServiceHours(serviceHourList, orderData) {
         activeTime.activeDate = `0${activeTime.activeDate}`;
     }
     let currentDate = `${activeTime.activeYear}-${activeTime.activeMonth}-${activeTime.activeDate}`;
-    let newReservations = JSON.parse(localStorage.getItem("newReservations")) || { reservations: {} };
+    let newReservations = JSON.parse(localStorage.getItem("newReservations")) || { merchant_name: keyword, reservations: {} };
     let listElement = document.querySelector(".list");
     if (newReservations.merchant_name && newReservations.merchant_name !== keyword) {
         newReservations.merchant_name = keyword;
@@ -656,11 +658,28 @@ function renderServiceHours(serviceHourList, orderData) {
         console.log("currentDate:", currentDate);
         for (let order of orderData) {
             let orderDate = order[0];
+            console.log("orderDate:", orderDate);
+            console.log(order[1], order[2]);
+            console.log(serviceHour[0], serviceHour[1]);
             if (orderDate === currentDate) {
-                if ((parseInt(serviceHour[0]) <= parseInt(order[1]) && parseInt(serviceHour[1]) >= parseInt(order[1]))||
-                    (parseInt(serviceHour[0]) <= parseInt(order[2]) && parseInt(serviceHour[1]) >= parseInt(order[2]))){
-                    serviceHourRange.classList.add('cancelled');
+                console.log("orderDate === currentDate");
+                let serviceHourStart = parseInt(serviceHour[0].split(":")[0]);
+                let serviceHourEnd = parseInt(serviceHour[1].split(":")[0]);
+                let orderStart = parseInt(order[1].split(":")[0]);
+                let orderEnd = parseInt(order[2].split(":")[0]);
+                if (serviceHourEnd < serviceHourStart) {//午夜時間判定
+                    if ((serviceHourStart <= orderStart || serviceHourEnd >= orderStart) ||
+                        (serviceHourStart <= orderEnd || serviceHourEnd >= orderEnd)) {
+                        console.log("service hour range cancelled");
+                        serviceHourRange.classList.add('cancelled');
                     }
+                } else {//普通時間判定
+                    if ((serviceHourStart <= orderStart && serviceHourEnd >= orderStart) ||
+                        (serviceHourStart <= orderEnd && serviceHourEnd >= orderEnd)) {
+                        console.log("service hour range cancelled");
+                        serviceHourRange.classList.add('cancelled');
+                    }
+                }
             };
         };
 
@@ -707,7 +726,7 @@ function renderServiceHours(serviceHourList, orderData) {
 function checkListButton(){
     document.querySelector(".check-list").addEventListener('click', function() {
         console.log("Check list button clicked");
-        let newReservations = JSON.parse(localStorage.getItem("newReservations")) || { reservations: {} };
+        let newReservations = JSON.parse(localStorage.getItem("newReservations")) || { merchant_name: keyword, reservations: {} };
         let listElement = document.querySelector(".list");
         if (newReservations.merchant_name && newReservations.merchant_name !== keyword) {
             newReservations.merchant_name = keyword;

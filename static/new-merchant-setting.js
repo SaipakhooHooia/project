@@ -1,13 +1,9 @@
-const token = document.cookie.split('; ').find(row => row.startsWith('token='));
-if (!token) {
-    window.location.href = '/';
-}
-
 document.querySelector(".add").addEventListener("click", () => {
     addTimeGroup();
 })
 
-document.querySelector(".service-agreement").addEventListener("click", () => {
+document.querySelector(".agreement").addEventListener("click", () => {
+    console.log("service-agreement-label");
     let agreementContent = document.querySelector(".agreement-content");
     agreementContent.style.display = "block";
     agreementContent.classList.remove("hidden");
@@ -22,6 +18,7 @@ document.querySelector(".agreement-checkbox2").addEventListener("change", () => 
     if (document.querySelector(".agreement-checkbox2").checked === true) {
         document.querySelector(".agreement-checkbox").checked = true;
         let agreementContent = document.querySelector(".agreement-content");
+        agreementContent.style.display = "none";
         agreementContent.classList.add("hidden");
 
         setTimeout(() => {
@@ -45,8 +42,120 @@ function selector(elements){
     return select;
 };
 
-selector('#new-service-time-start');
-selector('#new-service-time-end');
+document.addEventListener("DOMContentLoaded", function() {
+    initialize();
+    console.log("DOMContentLoaded");
+});
+function initialize() {
+    selector('#new-service-time-start');
+    selector('#new-service-time-end');
+    renderOldNewMerchantForm();
+    console.log("initialize");
+};
+
+function renderMerchantMemberPage(memberData) {
+    // 清空之前的内容
+    const merchantMemberDataContainer = document.querySelector(".merchant-member-data");
+    merchantMemberDataContainer.innerHTML = '';
+
+    for (let merchantName in memberData) {
+        let contact = memberData[merchantName].contact;
+        let intro = memberData[merchantName].intro;
+        let accountNum = memberData[merchantName].account_num;
+        let phoneNumber = memberData[merchantName].phone_number;
+        let address = memberData[merchantName].address;
+        let googleMapSrc = memberData[merchantName].google_map_src;
+        let supply = memberData[merchantName].supply;
+        let note = memberData[merchantName].note;
+        let merchantOnBroad = memberData[merchantName].on_broad;
+        
+        let merchantDiv = document.createElement('div');
+        merchantDiv.className = `merchant ${merchantName.replace(/\s+/g, '-')}`;
+        
+        let h2 = document.createElement('h2');
+        h2.textContent = merchantName;
+        merchantDiv.appendChild(h2);
+
+        const fields = [
+            { label: '負責人', name: 'contact', value: contact },
+            { label: '場地描述', name: 'intro', value: intro, isTextarea: true },
+            { label: '公司帳號', name: 'account_num', value: accountNum },
+            { label: '連絡電話', name: 'phone_number', value: phoneNumber },
+            { label: '地址', name: 'address', value: address },
+            { label: 'google map 定位連結', name: 'google_map_src', value: googleMapSrc },
+            { label: '供應商品', name: 'supply', value: supply, isTextarea: true },
+            { label: '注意事項', name: 'note', value: note, isTextarea: true }
+        ];
+
+        fields.forEach(field => {
+            let label = document.createElement('label');
+            label.setAttribute('for', field.name);
+            label.textContent = field.label;
+            merchantDiv.appendChild(label);
+
+            let input = document.createElement(field.isTextarea ? 'textarea' : 'input');
+            input.className = field.name;
+            input.name = field.name;
+            input.value = field.value;
+            merchantDiv.appendChild(input);
+
+            merchantDiv.appendChild(document.createElement('br'));
+        });
+
+        let serviceHoursContainer = document.createElement('div');
+        serviceHoursContainer.className = 'service-hours-container';
+        
+        for (let serviceHour of memberData[merchantName].service_hours) {
+            let serviceHourDiv = document.createElement('div');
+            serviceHourDiv.className = 'service-hour';
+
+            const serviceFields = [
+                { label: '營業開始時間', name: 'start-time', value: serviceHour.startTime },
+                { label: '營業結束時間', name: 'end-time', value: serviceHour.endTime },
+                { label: '金額', name: 'price', value: serviceHour.price },
+                { label: '時段名稱', name: 'service-time', value: serviceHour.serviceHourName }
+            ];
+
+            serviceFields.forEach(field => {
+                let label = document.createElement('label');
+                label.setAttribute('for', field.name);
+                label.textContent = field.label;
+                serviceHourDiv.appendChild(label);
+
+                let input = document.createElement('input');
+                input.className = field.name;
+                input.name = field.name;
+                input.value = field.value;
+                serviceHourDiv.appendChild(input);
+
+                serviceHourDiv.appendChild(document.createElement('br'));
+            });
+            
+            serviceHoursContainer.appendChild(serviceHourDiv);
+        }
+
+        let onBroad = document.createElement('div');
+        onBroad.className = 'on-broad';
+
+        let checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = 'online-status';
+        checkbox.name = 'on-broad';
+        checkbox.className = 'on-broad-checkbox';
+        checkbox.checked = merchantOnBroad;
+
+        let label = document.createElement('label');
+        label.setAttribute('for', 'online-status');
+        label.textContent = '上線狀態';
+
+        onBroad.appendChild(checkbox);
+        onBroad.appendChild(label);
+
+        merchantDiv.appendChild(serviceHoursContainer);
+        serviceHoursContainer.appendChild(onBroad);
+        merchantMemberDataContainer.appendChild(merchantDiv);
+    };
+};
 
 function addTimeGroup() {
     const lineBreak1 = document.createElement('br');
@@ -169,15 +278,69 @@ function checkTimeRangeOverlap() {
     return overlap;
 };
 
+document.querySelector(".next-page").addEventListener("click", (event) => {
+    event.preventDefault();
+    let merchantName = document.getElementById("new-merchant-name").value;
+    let userName = document.getElementById("new-user-name").value;
+    let phoneNum = document.getElementById("phone-num").value;
+    let accountNum = document.getElementById("account-num").value;
+    let serviceType = document.getElementById("service-type").value;
+    let address = document.getElementById("new-address").value;
+
+    if (!merchantName || !userName || !phoneNum || !accountNum || !serviceType || !address) {
+        alert("請填寫完整商家資料。");
+        return;
+    };
+
+    if (!phoneNum.match(/^\d{10}$/)) {
+        alert("請輸入正確的電話號碼。");
+        return;
+    };
+
+    if (!accountNum.match(/^\d{16}$/)) {
+        alert("請輸入正確的銀行帳號。");
+        return;
+    };
+    let googleMapRawData = document.getElementById("google-map-src").value;
+    let srcRegex = /src="([^"]*)"/;
+    let match = googleMapRawData.match(srcRegex);
+    if (!match) {
+        alert("Google 地圖網址格式錯誤。");
+        return;
+    };
+    let googleMapSrc = match ? match[1] : null;
+
+    let intro = document.getElementById("new-intro").value;
+    let supply = document.getElementById("new-supply").value;
+    let note = document.getElementById("new-note").value;
+
+    let merchantData = {
+        'merchant_name': merchantName,
+        'user_name': userName,
+        'phone_number': phoneNum,
+        'account_number': accountNum,
+        'service_type': serviceType,
+        'address': address,
+        'google_map_src': googleMapSrc,
+        'intro': intro,
+        'supply': supply,
+        'note': note
+    };
+
+    localStorage.setItem("merchantData", JSON.stringify(merchantData));
+    document.querySelector(".add-new-merchant-form").style.display = "none";
+    document.querySelector(".add-new-merchant-form2").style.display = "block";
+});
+
 document.querySelector(".submit-new-merchant").addEventListener("click", async (event) => {
     event.preventDefault();
-    document.querySelector(".submit-new-merchant-message").textContent = "資料上傳中，請稍後...";
+    document.querySelector(".message").textContent = "資料上傳中，請稍後...";
     const form = document.getElementById('form');
     const formData = new FormData(form);
     formData.delete('image');
     const images = document.getElementById('image').files;
-    let submitButton = document.querySelector(".submit-new-merchant");
-    submitButton.disabled = true; 
+    const gmail = localStorage.getItem('merchant-signup-gmail');
+    formData.append('gmail', gmail);
 
     let resizedImages = [];
 
@@ -189,8 +352,6 @@ document.querySelector(".submit-new-merchant").addEventListener("click", async (
     resizedImages.forEach((resizedImage, index) => {
         formData.append('image', resizedImage, `image-${index}.jpg`);
     });
-
-    let cookie = getTokenFromString(document.cookie);
 
     let payload = {};
     let timeOverlaoResult = checkTimeRangeOverlap();
@@ -247,11 +408,8 @@ document.querySelector(".submit-new-merchant").addEventListener("click", async (
     console.log(formData.getAll("image"));
 
     try {
-        const response = await fetch('/api/add-merchant', {
+        const response = await fetch('/api/signup-merchant', {
             method: 'POST',
-            headers: {
-                'Authorization': cookie
-            },
             body: formData
         });
         const data = await response.json();
@@ -334,4 +492,60 @@ function readURL(input) {
         reader.onerror = (error) => reject(error);
         reader.readAsDataURL(file);
     });
-}
+};
+
+document.querySelector(".question-mark").addEventListener("click", (event) => {
+    event.preventDefault();
+    document.querySelector(".google-map-tutorial").classList.remove("hidden");
+    document.querySelector(".google-map-tutorial").style.display = "block";
+  });
+
+document.querySelector(".cancel-google-map-tutorial").addEventListener("click", (event) => {
+    event.preventDefault();
+    document.querySelector(".google-map-tutorial").style.display = "none";
+  });
+
+document.querySelector(".submit-google-map-tutorial").addEventListener("click", (event) => {
+    event.preventDefault();
+    let tutorialElement = document.querySelector(".google-map-tutorial");
+    document.querySelector(".google-map-tutorial").classList.add("hidden");
+    setTimeout(() => {
+        tutorialElement.style.display = "none";
+    }, 1000);
+});
+
+function renderOldNewMerchantForm() {
+    console.log("renderOldNewMerchantForm");
+    let newMerchantForm = document.querySelector(".add-new-merchant-form");
+        console.log("newMerchantForm?.style.display === 'block'");
+      
+        let merchantData = JSON.parse(localStorage.getItem("merchantData") || "{}");
+        console.log("Merchant Data:", merchantData);
+        let fieldsToUpdate = {
+          "new-merchant-name": "merchant_name",
+          "new-user-name": "user_name",
+          "phone-num": "phone_number",
+          "account-num": "account_number",
+          "service-type": "service_type",
+          "new-address": "address",
+          "google-map-src": "google_map_src",
+          "new-intro": "intro",
+          "new-supply": "supply",
+          "new-note": "note"
+        };
+        
+        if (merchantData) {
+            for (let [elementId, dataKey] of Object.entries(fieldsToUpdate)) {
+                let element = document.getElementById(elementId);
+              if (element) {
+                element.value = merchantData[dataKey] || "";
+              }
+            };
+        };
+  };
+
+  document.querySelector(".last-page").addEventListener("click", (event) => {
+    event.preventDefault();
+    document.querySelector(".add-new-merchant-form").style.display = "block";
+    document.querySelector(".add-new-merchant-form2").style.display = "none";
+});

@@ -19,8 +19,8 @@ document.querySelector(".popup-menu-title").addEventListener("click", () => {
 
 document.querySelector(".popup-menu").children[1].addEventListener("click", (event) => {
     document.querySelector(".login-signup-form").style.display = "block";
-    document.querySelector(".signup-area").style.display = "block";
     document.querySelector(".login-area").style.display = "none";
+    document.querySelector(".signup-area").style.display = "block";
 });
 
 document.querySelector(".popup-menu").children[2].addEventListener("click", (event) => {
@@ -35,8 +35,9 @@ document.querySelector(".switch-to-login").addEventListener("click", (event) => 
 });
 
 document.querySelector(".switch-to-signup").addEventListener("click", (event) => {
-    document.querySelector(".signup-area").style.display = "block";
+    document.querySelector(".login-signup-form").style.display = "block";
     document.querySelector(".login-area").style.display = "none";
+    document.querySelector(".signup-area").style.display = "block";
 });
 
 document.querySelectorAll(".cancel").forEach((element) => {
@@ -105,6 +106,15 @@ else {
     document.querySelector(".login-signup-popup-menu").style.display = "block";
     document.querySelector(".log-out").style.display = "none";
 };
+
+if (userTokenExist) {
+    document.querySelector(".user-menu").style.display = "block";
+    document.querySelector(".popup-menu-title").style.display = "none";
+};
+
+document.querySelector(".user-menu").addEventListener("click", (event) => {
+    window.location.href = "/user_member_page";
+});
 
 document.querySelector(".log-out").addEventListener("click", (event) => {
     document.cookie = "user_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict";

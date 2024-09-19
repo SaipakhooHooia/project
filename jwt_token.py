@@ -17,12 +17,10 @@ class Token(BaseModel):
 
 class Merchant:
     @staticmethod 
-    def jwt_encode(merchant_name, user_name, gmail, merchant_db_id):
+    def jwt_encode(user_name, gmail):
         payload = {
-            "merchant_name": merchant_name,
             "user_name": user_name,
             "gmail": gmail,
-            "merchant_db_id": merchant_db_id
         }
         encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
         return Token(token = encoded_jwt)
@@ -40,6 +38,8 @@ class Merchant:
             raise HTTPException(status_code=500, detail=Error_message(error=True, message="500 internal server error.").model_dump())
 
     #{'merchant_name': 'hello', 'user_name': 'midori', 'gmail': 'kawamotoiscute@gmail.com', 'merchant_db_id': 13}
+#print(Merchant.jwt_decode('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjaGFudF9uYW1lIjoiVGVzdDIiLCJ1c2VyX25hbWUiOiJ0ZXN0IiwiZ21haWwiOiJrYXdhbW90b2lzY3V0ZUBnbWFpbC5jb20iLCJtZXJjaGFudF9kYl9pZCI6NTF9.vXy5dYB8ty8koPY62o_pnpGyEJmMCKo9dHExL2bukFI'))
+#print(Merchant.jwt_decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjaGFudF9uYW1lIjoiSUtFQVx1NWM1NVx1NzkzYVx1OTU5MyIsInVzZXJfbmFtZSI6IkpVS1RZIiwiZ21haWwiOiJrYXdhbW90b2lzY3V0ZUBnbWFpbC5jb20iLCJtZXJjaGFudF9kYl9pZCI6MzR9.R-pN1mptWqp6VzxcOCJStDg5iZ4NHuw5iIFK8rj23S0"))
 class User:
     @staticmethod 
     def jwt_encode(name_user, phone_number_user, gmail, user_id):

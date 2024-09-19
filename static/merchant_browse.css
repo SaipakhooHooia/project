@@ -124,7 +124,7 @@ body{
 
 .popup-menu div:hover, .login-signup-menu div:hover{
     cursor: pointer;
-    background-color: #c6c6c6;
+    background-color: antiquewhite;
 }
 
 .search-container{

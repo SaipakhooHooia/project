@@ -1,9 +1,20 @@
 let cloudFrontUrl = "https://df6a6ozdjz3mp.cloudfront.net/";
 
+function initialize() {
+    getMerchants();
+};
+
+initialize();
+
 function getMerchants() {
     fetch("/api/merchanting")
     .then(response => response.json())
-    .then(data => {const categories = Object.keys(data);
+    .then(data => {
+        let fetchData = Object.keys(data);
+        let categories = Object.keys(data.merchant_data);
+        console.log(fetchData);
+        let keywords = data.keywords;
+        console.log(keywords);
         
         for (let i = 1; i <= 6; i++) {
             const category = categories[i - 1];
@@ -21,7 +32,7 @@ function getMerchants() {
 
             if (i > categories.length) continue; 
 
-            const firstItem = data[category] && data[category][0];
+            const firstItem = data['merchant_data'][category] && data['merchant_data'][category][0];
 
             if (!firstItem) continue;  
 
@@ -38,7 +49,15 @@ function getMerchants() {
                 console.log(keyword);
                 window.location.href = `/merchant_browse?keyword=${keyword}`;
             });
-        }})
+        };
+        for (let i = 0; i < keywords.length; i++) {
+            let keywordDiv = document.createElement('div');
+            keywordDiv.textContent = keywords[i];
+            keywordDiv.className = 'keyword';
+            document.querySelector(".keyword-container").appendChild(keywordDiv);
+        };
+        keywordFunction();
+    })
     .catch(error => console.error('Error fetching merchants:', error));
     /*try {
         let response = await fetch("/api/merchants");
@@ -91,4 +110,13 @@ function getMerchants() {
     }*/
 };
 
-getMerchants();
+function keywordFunction() {
+    document.querySelectorAll(".keyword").forEach((element) => {
+        element.addEventListener("click", (event) => {
+            event.preventDefault();
+            let keyword = event.currentTarget.textContent;
+            console.log(keyword);
+            window.location.href = `/merchant_browse?keyword=${keyword}`;
+        });
+    })
+};

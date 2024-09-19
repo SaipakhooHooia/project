@@ -7,9 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Grey+Qo:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <link rel="stylesheet" type="text/css" href="/static/merchant_member_page.css" />
+  <link rel="stylesheet" type="text/css" href="/static/new-merchant-setting.css" />
   <link rel="stylesheet" type="text/css" href="/static/signup.css" />
-  <link rel="stylesheet" type="text/css" href="/static/merchant-setting.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
   <title>Merchant setting Page</title>
 </head>
@@ -90,9 +89,9 @@
                 data-callback="onSignIn">
                 </div>
                 <div id="user-signup-button"></div>
-                <div class = "user-signup-message"></div>
             </form>
             <div class = "switch-to-login-user">已經有帳號了?直接登入</div>
+            <div class = "user-signup-message"></div>
         </div>
         <div class = "login-area-user">
             <div class = "title">Login
@@ -103,97 +102,6 @@
             <div class = "message"></div>
         </div>
     </div>
-    <div class = "main">
-        <div class = "setting-list">
-            <!--<div class = "merchant-setting-title">商店資料管理</div>-->
-            <div class = "merchant-calender">預約月曆</div>
-            <div class = "order-setting-title">訂單查詢</div>
-            <div class = "add-merchant-title">新增商家</div>
-            <div class = "common-question-title">常見問題</div>
-            <div class = "catogory-by-merchant">商家列表</div>
-        </div>
-        <div class = "merchant-setting-form">
-            <form id = "form">
-                <div class = "wrapper">
-                    <h1>商家會員中心</h1>
-                    <form>
-                        <div class = "merchant-member-data">
-                        </div>
-                    </form>
-                    <button type = "button" class = "submit">送出</button>
-                    <strong class = "sending-message"></strong>
-                </div>
-            </form>
-        </div>
-        <div class = "order-setting-form">
-            <h1>訂單管理</h1>
-            <div class = "search-bar-wrapper">
-                <form id = "search-form">
-                    <div class = "search-bar">
-                        <select id = "search-option">
-                            <option value = "">全部</option>
-                            <option value = "blur">模糊搜尋</option>
-                            <option value = "m.merchant_name">商店名稱</option>
-                            <option value = "o.prime">銀行交易號碼</option>
-                            <option value = "o.booking_name_user">預約姓名</option>
-                            <option value = "o.booking_phone_number_user">預約電話</option>
-                            <option value = "o.booking_gmail">預約信箱</option>
-                            <option value = "o.total_price">訂單金額</option>
-                            <option value = "o.is_paid">交易結果</option>
-                            <option value = "o.date">預約日期</option>
-                            <option value = "o.service_time_name">預約時段</option>
-                            <option value = "o.order_number">訂單編號</option>
-                            <option value = "o.comment">備註</option>
-                        </select>
-                    </div>
-                    <button class = "search-orders">搜尋</button>
-                </form>
-            </div>
-            <div class = "wrapper1">
-                    <div class = "order-data-column">
-                        <div>商店名稱</div>
-                        <div>銀行交易號碼</div>
-                        <div>預約姓名</div>
-                        <div>預約電話</div>
-                        <div>預約信箱</div>
-                        <div>訂單編號</div>
-                        <div>預約日期</div>
-                        <div>起始時間</div>
-                        <div>結束時間</div>
-                        <div>預約時段</div>
-                        <div>單筆金額</div>
-                        <div>總金額</div>
-                        <div>交易結果</div>
-                        <div>附註</div>
-                    </div>
-                    <div class = "order-data-form"></div>
-            </div>
-        </div>
-        <div class = "merchant-calender-form">
-            <h1>商家月曆</h1>
-            <div class = "calender-area">
-                <div class = "calender-wrapper">
-                    <div class = "year"></div>
-                    <div class = "month-container">
-                        <div class = "left-arrow"></div>
-                        <div class = "month"></div>
-                        <div class = "right-arrow"></div>
-                    </div>
-                    <div class = "week-day">
-                        <div>Mon</div>
-                        <div>Tue</div>
-                        <div>Wed</div>
-                        <div>Thu</div>
-                        <div>Fri</div>
-                        <div>Sat</div>
-                        <div>Sun</div>
-                    </div>
-                    <div class = "calender-form"></div>
-                </div>
-                <div class = "merchant-color-list"></div>
-            </div>
-            <div class = "order-detail-form"></div>
-        </div>
         <div class = "add-new-merchant-form">
             <h1>新增商家頁面</h1>
             <form>
@@ -228,11 +136,11 @@
                     <input placeholder = "地址" id = "new-address" name = "new-address">
                 </div>
                 <div>
-                    <!--<div class = "question-mark-wrapper">
+                    <div class = "question-mark-wrapper">
                         <label for = "google-map-src">場地位址連結</label>
                         <div class = "question-mark">?</div>
                         <input placeholder = "可提供Google map定位的連結" id = "google-map-src" name = "google-map-src">
-                    </div>-->
+                    </div>
                 </div>
                 <div>
                     <label for = "new-intro">場地描述</label>
@@ -252,10 +160,28 @@
                 <div id="merchant-signup-button"></div>
                 <button type = "button" class = "next-page">下一頁</button>
             </form>
+            <div class = "google-map-tutorial">
+                <div class = "title">如何取得Google map連結
+                    <img class = "cancel-google-map-tutorial" src = "/static/x_icon.png">
+                </div>
+                <div class = "steps">
+                    <div>1. 進入Google Map</div>
+                    <div>2. 輸入商家地址</div>
+                    <img src = "/static/tutorial_1.png">
+                    <div>3. 點選分享 > 嵌入地圖</div>
+                    <img src = "/static/tutorial_2.png">
+                    <div>4. 點選「複製HTML」</div>
+                    <img src = "/static/tutorial_3.png">
+                </div>
+                <div class = "button-wrapper">
+                    <button type = "button" class = "submit-google-map-tutorial">我瞭解了</button>
+                </div>
+            </div>
     </div>
     <div class = "add-new-merchant-form2">
         <form id = "form">
-                <h1>新增商家頁面</h1>
+            <div class = "wrapper">
+                <h1>註冊完成，現在來設定商家資料吧!</h1>
                 <div class = "service-time-container">
                     <div class = "service-time-setting">
                         <strong class = "service-time-title">服務時段設定</strong>
@@ -286,7 +212,7 @@
             </div>
             <div class = "agreement">
                 <input type="checkbox" id="agreement-status" name="agreement" class ="agreement-checkbox">
-                <label for="agreement-status">我已閱讀並同意<div class = "service-agreement">服務條款</div></label> 
+                <label for="agreement-status" class = "service-agreement-label">我已閱讀並同意<div class = "service-agreement">服務條款</div></label> 
             </div>
             <div class = "agreement-content">
                 <div class = "service-agreement-title">
@@ -358,40 +284,14 @@
             </div>
                 <button type = "button" class = "submit-new-merchant">送出</button>
                 <button type = "button" class = "last-page">上一頁</button>
-                <div class = "submit-new-merchant-message"></div>
+                <div class = "message"></div>
                 <h3>你可以隨時在會員中心的商家資料中修改</h3>
+            </div>
         </form>
     </div>
-    <div class = "common-question-form">
-        <h1>常見問題</h1>
-        <div class = "google-map-src-tutorial">
-            <strong class = "google-map-src-tutorial-title">如何取得Google map定位的連結</strong>
-            <br>
-            <div>1. 進入Google Map</div>
-            <div>2. 輸入商家地址</div>
-            <img src = "/static/tutorial_1.png">
-            <div>3. 點選分享 > 嵌入地圖</div>
-            <img src = "/static/tutorial_2.png">
-            <div>4. 點選「複製HTML」</div>
-            <img src = "/static/tutorial_3.png">
-        </div>
-        <div class = "door-password-setting-tutorial">
-            <strong class = "google-map-src-tutorial-title">如何取得Google map定位的連結</strong>
-            <br>
-            <div>1. 進入Google Map</div>
-            <div>2. 輸入商家地址</div>
-            <img src = "/static/tutorial_1.png">
-            <div>3. 點選分享 > 嵌入地圖</div>
-            <img src = "/static/tutorial_2.png">
-            <div>4. 點選「複製HTML」</div>
-            <img src = "/static/tutorial_3.png">
-        </div>
-    </div>
-    </div>
     <div class = "footer"></div>
-  <script src = "/static/merchant_member_page.js" defer></script>
+  <script src = "/static/new-merchant-setting.js" defer></script>
   <script src = "/static/menu_button.js" defer></script>
   <script src = "/static/signup.js" defer></script>
-  <script src = "static/merchant-setting.js" defer></script>
 </body>
 </html>

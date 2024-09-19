@@ -1,0 +1,179 @@
+select{
+    width: 200px;
+    height: 30px;
+    border: 0px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.order-cards {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.order-select-area {
+    width: 100%;
+}
+
+.order-image {
+    height: 200px;
+    width: 250px;
+}
+
+.order-image-container {
+    display: flex;
+    height: 10%;
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: rgba(84, 84, 84, 0.385) 10px 10px 10px;
+}
+
+.order-info {
+    margin-left: 10px;
+}
+
+.order-info div {
+    margin-bottom: 5px;
+}
+
+.paid-status-title {
+    display: flex;
+}
+
+.cancel-order-button, .feed-back-button {
+    position: relative;
+    right: 10px;
+    top: 10px;
+    height: 2rem;
+    width: auto;
+    text-align: center;
+    justify-self: center;
+    border-radius: 0.25rem;
+    background-color: antiquewhite;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 10%;
+}
+
+.feed-back-sent {
+    position: relative;
+    right: 10px;
+    top: 10px;
+    height: 2rem;
+    width: auto;
+    text-align: center;
+    justify-self: center;
+    border-radius: 0.25rem;
+    background-color: #ddd;
+    border: none;
+    cursor: not-allowed;
+    font-size: 1rem;
+    margin-left: 10%;
+    opacity: 0.5;
+}
+
+.cancel-order-button:hover, .feed-back-button:hover, .submit-rate:hover {
+    opacity: 0.8;
+    box-shadow: #666 2px 2px 2px;
+    transition: 0.3s;
+}
+
+.cancel-status {
+    position: relative;
+    right: 10px;
+    top: 10px;
+    height: 2rem;
+    width: auto;
+    text-align: center;
+    justify-self: center;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    color: red;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 10%;
+}
+
+.event-status {
+    position: relative;
+    right: 10px;
+    top: 10px;
+    height: 2rem;
+    width: auto;
+    text-align: center;
+    justify-self: center;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    color: green;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 10%;
+}
+
+.feedback-area {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px; 
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1; 
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stars {
+    display: flex;
+}
+
+.star {
+    margin-left: 10px;
+    margin-bottom: 10px;
+    font-size: 2.5rem;
+}
+
+.submit-rate {
+    height: 2rem;
+    width: auto;
+    text-align: center;
+    justify-self: center;
+    border-radius: 0.25rem;
+    background-color: antiquewhite;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.merchant-name:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.cancel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background-image: url("/static/x_icon.png");
+    background-size: cover;
+    cursor: pointer
+}
+
+.cancel:hover {
+    opacity: 0.8;
+}
+
+.feedback-title {
+    text-align: center;
+}

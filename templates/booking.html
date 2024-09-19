@@ -22,16 +22,17 @@
         <div class = "browse-title">瀏覽空間</div>
         <div class = "popup-menu-title">成為空間合作者</div>
         <div class = "popup-menu">
-            <div>關於我們</div>
+            <div class = "about-us">關於我們</div>
             <div>註冊新商家</div>
             <div>商家登入</div>
-            <div>新增、編輯商店資料</div>
+            <div>商家會員中心</div>
         </div>
         <div class = "login-signup-popup-menu">登入/註冊</div>
         <div class = "login-signup-menu">
             <div>使用者註冊</div>
             <div>使用者登入</div>
         </div>
+        <div class = "user-menu">會員中心</div>
         <div class = "log-out">登出</div>
         <div class = "search-container">
             <div class = "search-area">
@@ -47,61 +48,15 @@
         <div class = "title">Sign Up
             <img class = "cancel" src = "/static/x_icon.png">
         </div>
-        <form>
-            <div>
-                <label for = "merchant-name">商家名稱</label>
-                <input placeholder = "請輸入商家名稱" id = "merchant-name" name = "merchant-name">
-            </div>
-            <div>
-                <label for = "user-name">聯絡人姓名</label>
-                <input placeholder = "聯絡人姓名" id = "user-name" name = "user-name">
-            </div>
-            <div>
-                <label for = "phone-number">連絡電話</label>
-                <input placeholder = "連絡電話" id = "phone-number" name = "phone-number">
-            </div>
-            <div>
-                <label for = "merchant-id">Tappay商家ID</label>
-                <input placeholder = "Tappay商家ID" id = "merchant-id" name = "merchant-id">
-            </div>
-            <div>
-                <label for = "service-type">租借類型</label>
-                <select id = "service-type" name = "service-type">
-                    <option value = "辦公">辦公</option>
-                    <option value = "民宿">民宿</option>
-                    <option value = "藝術">藝術</option>
-                    <option value = "娛樂">娛樂</option>
-                    <option value = "運動">運動</option>
-                </select>
-            </div>
-            <div>
-                <label for = "address">場地位址</label>
-                <input placeholder = "場地位址" id = "address" name = "address">
-            </div>
-            <div>
-                <label for = "google_map_src">場地位址連結</label>
-                <textarea placeholder = "可提供Google map定位的連結" id = "google_map_src" name = "google_map_src" rows="3" cols="50"></textarea>
-            </div>
-            <div>
-                <label for = "intro">場地描述</label>
-                <textarea placeholder="場地描述" id="intro" name="intro" rows="5" cols="50"></textarea>
-            </div>
-            <div>
-                <label for = "supply">提供設備</label>
-                <input placeholder = "提供設備" id = "supply" name = "supply">
-            </div>
-            <div>
-                <label for = "note">注意事項</label>
-                <input placeholder = "是否有特別注意事項" id = "note" name = "note">
-            </div>
-            <div>使用Gmail註冊</div>
-            <div id="g_id_onload"
-            data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
-            data-callback="onSignIn">
-            </div>
-            <div id="merchant-signup-button"></div>
-            <button type = "button" class = "signup_submit">送出</button>
-        </form>
+        <div class = "merchant-signup-container">
+            <label for = "merchant-user-name">使用者名稱</label>
+            <input placeholder = "使用者姓名" id = "merchant-user-name" name = "merchant-user-name">
+        </div>
+        <div class = "merchant-signup-container">
+            <label for = "merchant-user-phone-num">連絡電話</label>
+            <input placeholder = "連絡電話" id = "merchant-user-phone-num" name = "merchant-user-phone-num">
+        </div>
+        <div id="merchant-signup-button"></div>
         <div class = "switch-to-login">已經有帳號了?直接登入</div>
         <div class = "message"></div>
     </div>
@@ -109,8 +64,8 @@
         <div class = "title">Login
             <img class = "cancel" src = "/static/x_icon.png">
         </div>
+        <div class = "login-text">下方按鈕登入</div>
         <div id="merchant-login-button"></div>
-        <button type = "button" class = "login_submit">送出</button>
         <div class = "switch-to-signup">還沒有帳號嗎?在此註冊</div>
         <div class = "message"></div>
     </div>
@@ -122,21 +77,19 @@
             <img class = "cancel" src = "/static/x_icon.png">
         </div>
         <form>
-            <div>
+            <div class = "name-user-input">
                 <label for = "name-user">使用者名稱</label>
                 <input placeholder = "使用者姓名" id = "name-user" name = "name-user">
             </div>
-            <div>
+            <div class = "phone-number-user-input">
                 <label for = "phone-number-user">連絡電話</label>
                 <input placeholder = "連絡電話" id = "phone-number-user" name = "phone-number-user">
             </div>
-            <div>使用Gmail註冊</div>
             <div id="g_id_onload"
             data-client_id="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com"
             data-callback="onSignIn">
             </div>
             <div id="user-signup-button"></div>
-            <button type = "button" class = "signup_submit_user">送出</button>
         </form>
         <div class = "switch-to-login-user">已經有帳號了?直接登入</div>
         <div class = "user-signup-message"></div>
@@ -146,7 +99,6 @@
             <img class = "cancel" src = "/static/x_icon.png">
         </div>
         <div id="user-login-button"></div>
-        <button type = "button" class = "login_submit_user">送出</button>
         <div class = "switch-to-signup-user">還沒有帳號嗎?在此註冊</div>
         <div class = "message"></div>
     </div>

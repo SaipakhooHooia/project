@@ -1,6 +1,6 @@
 .login-signup-form, .login-signup-form-user {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -34,7 +34,7 @@
     color: blue;
 }
 
-.switch-to-signup:hover, .switch-to-login:hover, .switch-to-signup-user:hover, .switch-to-login-user:hover, .log-out:hover{
+.switch-to-signup:hover, .switch-to-login:hover, .switch-to-signup-user:hover, .switch-to-login-user:hover, .log-out:hover ,.user-menu:hover{
     cursor: pointer;
     text-decoration: underline;
 }
@@ -69,6 +69,14 @@ form, .switch-to-login, .switch-to-signup, .login-area>.g_id_signin, .login-area
     display: flex;
     margin-bottom: 10px;
     margin-right: 10px;
+}
+
+.name-user-input, .phone-number-user-input {
+    margin-left: 10px;
+}
+
+.merchant-signup-container {
+    margin-left: 10px;
 }
 
 .title{
@@ -107,7 +115,7 @@ form, .switch-to-login, .switch-to-signup, .login-area>.g_id_signin, .login-area
 }
 
 .login_submit, .signup_submit, .login_submit_user, .signup_submit_user{
-    background-color: #ddd;
+    background-color: antiquewhite;
     border-radius: 10px;
     padding: 5px;
     font-size: 1.25rem;
@@ -121,4 +129,44 @@ form, .switch-to-login, .switch-to-signup, .login-area>.g_id_signin, .login-area
 .login_submit:hover, .signup_submit:hover, .login_submit_user:hover, .signup_submit_user:hover{
     cursor: pointer;
     opacity: 0.8;
+    box-shadow: #666 2px 2px 2px;
+}
+
+.user-menu{
+    display: none;
+}
+
+.merchant-signup-container, .signup_submit {
+    margin-left: 10px;
+}
+
+.login-text {
+    margin-left: 10px;
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+}
+
+.about-us {
+    display: none;
+}
+
+.adjust-setting {
+    width: 55px;
+    height: 55px;
+    padding: 0px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.adjust-setting:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.search-setting {
+    display: none;
+}
+
+.search-setting-container {
+    display: flex;
 }

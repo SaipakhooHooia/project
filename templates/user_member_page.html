@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/static/user_member_page.css" />
   <meta name="google-signin-client_id" content="69733288319-aneoppgio3farrkvp3fkfoslcbppr1vg.apps.googleusercontent.com">
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Grey+Qo:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <link rel="stylesheet" type="text/css" href="/static/merchant_browse.css" />
+  <link rel="stylesheet" type="text/css" href="/static/index.css" />
   <link rel="stylesheet" type="text/css" href="/static/signup.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
-  <title>Merchant setting Page</title>
+  <title>Merchant</title>
 </head>
 <body>
     <div class = "header">
@@ -20,7 +21,7 @@
         </div>
         <div class = "menu">
             <div class = "browse-title">瀏覽空間</div>
-                <div class = "popup-menu-title">成為空間合作者</div>
+            <div class = "popup-menu-title">成為空間合作者</div>
             <div class = "popup-menu">
                 <div class = "about-us">關於我們</div>
                 <div>註冊新商家</div>
@@ -91,7 +92,7 @@
                 <div id="user-signup-button"></div>
             </form>
             <div class = "switch-to-login-user">已經有帳號了?直接登入</div>
-            <div class = "user-signup-message"></div>
+            <div class = "message"></div>
         </div>
         <div class = "login-area-user">
             <div class = "title">Login
@@ -103,12 +104,21 @@
         </div>
     </div>
     <div class = "main">
-        <div class = "main-container">
+        <div class = "order-select-area">
+            <h1>使用者會員中心</h1>
+            <select id = "order-select">
+                <option>全部訂單</option>
+                <option>已完成訂單</option>
+                <option>即將到來的預約</option>
+                <option>已取消訂單</option>
+            </select>
         </div>
+        <div class = "order-cards"></div>
+        <div class = "feedback-area"></div>
     </div>
     <div class = "footer"></div>
+  <script src = "/static/user_member_page.js" defer></script>
   <script src = "/static/menu_button.js" defer></script>
-  <script src = "/static/merchant_browse.js" defer></script>
   <script src = "/static/signup.js" defer></script>
 </body>
 </html>

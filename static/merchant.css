@@ -122,7 +122,7 @@
 }
 
 .selected {
-    background-color: #dddddd58; /* 或你希望的颜色 */
+    background-color: antiquewhite;
 }
 
 .header{
@@ -243,7 +243,7 @@ body{
 
 .popup-menu div:hover, .login-signup-menu div:hover{
     cursor: pointer;
-    background-color: #c6c6c6;
+    background-color: antiquewhite;
 }
 
 .popup-menu{
@@ -297,7 +297,7 @@ input{
     height: auto;
     margin-left: auto;
     margin-right: auto;
-    width: 80%;
+    width: 60%;
     margin-top: 40px;
     margin-bottom: 40px;
 }
@@ -363,7 +363,7 @@ input{
 
 .merchant-setting-form{
     display: block;
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -415,12 +415,12 @@ input{
     position: absolute;
     display: flex;
     flex-direction: column;
-    right: 10%;
+    right: 20%;
     top: 290px;
     height: 400px;
-    background-color: #dddddd58;
+    border: 5px solid antiquewhite;
     border-radius: 0px 10px 10px 0px;
-    box-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    /*box-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;*/
     font-size: 20px;
     padding: 15px;
     box-sizing: border-box;
@@ -436,18 +436,24 @@ input{
 .calender-wrapper{
     width: 50%;
     position: relative;
-    border: 1px solid #ddd;
+    border: 5px solid antiquewhite;
 }
 
 .selected-date, .selectable-time{
-    margin-left: 20px;
+    margin-left: 30px;
     height: 100%;
     width: 50%;
-    border: 1px solid #ddd;
+    border: 5px solid antiquewhite;
     font-size: 1.5rem;
     text-align: center;
     padding: 10px;
     box-sizing: border-box;
+}
+
+.check-list:hover {
+    cursor: pointer;
+    opacity: 0.8;
+    box-shadow: #666 2px 2px 2px;
 }
 
 .button-wrapper{
@@ -475,7 +481,7 @@ input{
 }
 
 .selected-date-title{
-    background-color: #ddd;
+    background-color: antiquewhite;
     margin-bottom: 10px;
 }
 
@@ -533,7 +539,7 @@ input{
 
 
 .list-container div {
-    background-color: #ddd;
+    background-color: antiquewhite;
     border-radius: 10px;
     width: auto;
     padding: 5px;
@@ -541,7 +547,7 @@ input{
 }
 
 .go-to-check {
-    background-color: #ddd;
+    background-color: antiquewhite;
     border-radius: 10px;
     padding: 5px;
     font-size: 1.25rem;
@@ -556,6 +562,9 @@ input{
     cursor: pointer;
     opacity: 0.8;
 }
+.go-to-check:hover{
+    box-shadow: #666 2px 2px 2px;
+}
 
 /*.list-container :first-child{
     margin-right: 5rem;
@@ -563,7 +572,7 @@ input{
 
 .list {
     display: none;
-    position: absolute;
+    position: fixed;
     width: 30%;
     top: 50%;
     left: 50%;
@@ -596,7 +605,7 @@ input{
 
 .reservation-card {
     margin-bottom: 10px;
-    background-color: #f0f0f0;
+    background-color: antiquewhite;
     padding: 5px;
 }
 
@@ -626,7 +635,7 @@ input{
 }
 
 .map-container iframe {
-    width: 70%;
+    width: 100%;
     height: 100%; 
     border: none; 
 }
@@ -652,4 +661,41 @@ input{
 
 .merchant-name {
     font-size: 2rem;
+}
+
+@media screen and (max-width: 1200px) {
+    .main{
+        align-items: center;
+        justify-content: center;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+
+    .merchant-info{
+        right: 10%;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .image-wrapper {
+        float: left;
+        height: 400px;
+        width: 400px;
+        overflow: hidden; 
+        border: 1px solid #ccc; 
+        border-radius: 10px 0px 0px 10px;
+        box-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    }
+
+    .image {
+        width: 400px;
+    }
+
+    .selectable-time{
+        margin-left: 20px;
+    }
 }

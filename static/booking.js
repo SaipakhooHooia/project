@@ -192,11 +192,17 @@ async function sendBookingData(){
         })
         .then(response => response.json())
         .then(data => {
-            alert(data.message);
-            console.log("訂單編號:", data.data);
-            if(data.data){
-                inform.textContent = `訂單編號：${data.data}，預約明細請留意電子郵件通知。`;
+            //console.log("訂單編號:", data.data);
+            if(!data.error){
+                alert(data.message);
+                inform.textContent = `訂單編號：${data.data}，預約明細請留意電子郵件通知。\n您可以在會員中心頁面查看預約資訊。`;
                 document.querySelector(".main").appendChild(inform);
+                let newReservations = { merchant_name: null, reservations: {} };
+                localStorage.setItem("newReservations", JSON.stringify(newReservations));
+                window.location.href = "/user_member_page";
+            }
+            else if (data.error) {
+                alert(data.error);
             };
         })
       });

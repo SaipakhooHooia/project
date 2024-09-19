@@ -14,7 +14,7 @@ def send_edit_order_mail(booking_name, booking_gmail, booking_merchant, date, ti
     msg = EmailMessage()
     msg["From"] = "yoyooo08302000@gmail.com"
     msg["To"] = booking_gmail
-    msg["Subject"] = "Unnamed Rentail預約變更通知"
+    msg["Subject"] = "Unnamed Rental預約變更通知"
     mail_content = f"""
     {booking_name.strip()} 您好，您的預約已經變更，以下是您的預約資訊：
 
@@ -45,7 +45,7 @@ def send_delete_order_mail(booking_name_user, booking_gmail, booking_merchant, d
     msg = EmailMessage()
     msg["From"] = "yoyooo08302000@gmail.com"
     msg["To"] = booking_gmail
-    msg["Subject"] = "Unnamed Rentail預約取消通知"
+    msg["Subject"] = "Unnamed Rental預約取消通知"
     mail_content = f"""
     {booking_name_user.strip()} 您好，您的預約已取消，以下是原預約資訊：
 
@@ -81,7 +81,7 @@ def send_refund_order_mail(mail_datas):
     msg = EmailMessage()
     msg["From"] = "yoyooo08302000@gmail.com"
     msg["To"] = booking_gmail
-    msg["Subject"] = "Unnamed Rentail退款通知"
+    msg["Subject"] = "Unnamed Rental退款通知"
     mail_content = f"""
     {booking_name_user.strip()} 您好，您的預約已退款，以下是原預約資訊："""
 

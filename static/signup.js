@@ -18,18 +18,24 @@ function handleCredentialResponse(response) {
         case 'user-login':
             console.log("User login with: " + responsePayload.email);
             userLoginGmail = responsePayload.email;
+            userLogin(userLoginGmail)
             break;
         case 'user-signup':
             console.log("User signup with: " + responsePayload.email);
             userSignupGmail = responsePayload.email;
+            userSignup(userSignupGmail);
             break;
         case 'merchant-login':
             console.log("Merchant login with: " + responsePayload.email);
             merchantLoginGmail = responsePayload.email;
+            merchantLogin(merchantLoginGmail);
             break;
         case 'merchant-signup':
             console.log("Merchant signup with: " + responsePayload.email);
             merchantSignupGmail = responsePayload.email;
+            merchantSignup(merchantSignupGmail);
+            //localStorage.setItem("merchant-signup-gmail", merchantSignupGmail);
+            //window.location.href = "/new_merchant_setting";
             break;
         default:
             console.error("Unknown button type:", buttonType);
@@ -64,9 +70,9 @@ window.onload = function () {
             google.accounts.id.renderButton(
                 buttonElement,
                 { 
-                    theme: "filled_blue", 
+                    theme: "outline", 
                     size: "large", 
-                    type: "icon",
+                    type: "standard",
                     click_listener: () => {
                         handleCredentialResponse.buttonType = button.type;
                     }
@@ -78,11 +84,43 @@ window.onload = function () {
     });
 }
 
-document.querySelector(".signup_submit").addEventListener("click", async function () {
-    if (!merchantSignupGmail) {
-        alert("Gmail not available. Please sign in first.");
+//**************************FB登入 */
+/*
+(function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk')
+);
+
+
+window.fbAsyncInit = function() {
+FB.init({
+appId            : '517905320729039',
+xfbml            : true,
+version          : 'v12.0'
+});
+FB.login(function(response) {
+if (response.authResponse) {
+ console.log('Welcome!  Fetching your information.... ');
+ FB.api('/me', {fields: 'name, email'}, function(response) {
+     document.getElementById("profile").innerHTML = "Good to see you, " + response.name + ". i see your email address is " + response.email
+ });
+} else { 
+ console.log('User cancelled login or did not fully authorize.'); }
+});
+};
+*/
+//**************************商家註冊、登入 */
+
+
+async function merchantSignup(merchantSignupGmail) {
+    if (!document.querySelector("#merchant-user-name").value || !document.querySelector("#merchant-user-phone-num").value) {
+        alert("請輸入商家名稱及電話");
         return;
-    }
+    };
     document.querySelector(".message").textContent = "資料上傳中，請稍後...";
     //console.log(document.querySelector("#merchant-name").value,document.querySelector("#user-name").value,gmail,document.querySelector("#phone-number").value,)
     let response = await fetch("/api/signup", {
@@ -91,30 +129,22 @@ document.querySelector(".signup_submit").addEventListener("click", async functio
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            merchant_name: document.querySelector("#merchant-name").value,
-            user_name: document.querySelector("#user-name").value,
             gmail: merchantSignupGmail,
-            phone_number: document.querySelector("#phone-number").value,
-            merchant_id: document.querySelector("#merchant-id").value,
-            service_type: document.querySelector("#service-type").value,
-            intro: document.querySelector("#intro").value,
-            address: document.querySelector("#address").value,
-            google_map_src: document.querySelector("#google_map_src").value,
-            supply: document.querySelector("#supply").value,
-            note: document.querySelector("#note").value
+            name: document.querySelector("#merchant-user-name").value,
+            phone_number: document.querySelector("#merchant-user-phone-num").value
         })
     });
     let data = await response.json();
-    if (data.token){
-        console.log(data.token);
-        setCookie("token", data.token, 7);
-        window.location.href = "/merchant_setting";
+    if (data.message){
+        alert(data.message);
     }
     else if (data.error){
         console.log(data.error);
         alert(data.error);
     } 
-});
+};
+
+    
 
 
 function setCookie(name, value, days) {
@@ -127,11 +157,7 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Strict";
 }
 
-document.querySelector(".login_submit").addEventListener("click", async function () {
-    if (!merchantLoginGmail) {
-        alert("Gmail not available. Please sign in first.");
-        return;
-    }
+async function merchantLogin(merchantLoginGmail) {
     document.querySelector(".message").textContent = "登入中...";
     let response = await fetch("/api/login", {
         method: "POST",
@@ -151,17 +177,18 @@ document.querySelector(".login_submit").addEventListener("click", async function
     else if (data.error){
         console.log(data.error);
         alert(data.error);
-    }
-});
+    };  
+};
 
 //---------使用者註冊部分---------
-document.querySelector(".signup_submit_user").addEventListener("click", async function () {
-    if (!userSignupGmail) {
-        alert("Gmail not available. Please sign in first.");
-        return;
-    }
+async function userSignup(userSignupGmail) {
     document.querySelector(".message").textContent = "資料上傳中，請稍後...";
     //console.log(document.querySelector("#name-user").value,document.querySelector("#phone-number-user").value,gmail,)
+    if(!document.querySelector("#name-user").value || !document.querySelector("#phone-number-user").value){
+        alert("請輸入姓名及電話");
+        return;
+    };
+
     let response = await fetch("/api/user_signup", {
         method: "POST",
         headers: {
@@ -178,17 +205,11 @@ document.querySelector(".signup_submit_user").addEventListener("click", async fu
         alert(data.error);
     }
     else{
-        document.querySelector(".user-signup-message").textContent = "註冊成功";
-        setCookie("user_token", data.token, 7);
-        window.location.reload();
+        document.querySelector(".user-signup-message").textContent = "註冊成功，請登入";
     };
-});
+};  
 
-document.querySelector(".login_submit_user").addEventListener("click", async function () {
-    if (!userLoginGmail) {
-        alert("Gmail not available. Please sign in first.");
-        return;
-    }
+async function userLogin(userLoginGmail){
     document.querySelector(".message").textContent = "登入中...";
     let response = await fetch("/api/login_user", {
         method: "POST",
@@ -211,5 +232,9 @@ document.querySelector(".login_submit_user").addEventListener("click", async fun
     else if (data.error){
         console.log(data.error);
         alert(data.error);
-    }
-});
+    };
+};
+/*
+document.querySelector(".adjust-setting").addEventListener("click", () => {
+    document.querySelector(".search-setting").style.display = "block";
+});*/

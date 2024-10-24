@@ -44,7 +44,7 @@ Unnamed Rental 是一個提供商家可以上架自助型的空間租借服務�
 
 <img src="/picture/user_member_page_send_rate.png" alt="使用者打心評價" width="70%">
 
-###商家方面
+### 商家方面
 商家可以在首頁選擇註冊新帳號，或者是直接登入商家會員中心。
 
 <img src="/picture/merchant_options.png" alt="商家註冊登入" width="70%">

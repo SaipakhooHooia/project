@@ -65,6 +65,7 @@ Unnamed Rental 是一個提供商家可以上架自助型的空間租借服務�
 ###資料儲存: AWS RDS(MySQL)
 ###信件發送: AWS Lambda、AWS EventListener、MySQL Trigger
 ###Server: AWS EC2
+###版本管理: Github
 
 ##系統架構圖
 ![圖片](/picture/system_architecture.png "系統架構圖")

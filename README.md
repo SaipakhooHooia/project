@@ -38,7 +38,7 @@ Unnamed Rental 是一個提供商家可以上架自助型的空間租借服務�
 
 在預約到期之前的一小時，使用者會在信箱收到商家設定的大門密碼。
 
-<img src="/picture/password_notify.png" alt="使用者密碼通知" width="70%">
+<img src="/picture/password_notify.png" alt="使用者密碼通知" width="50%">
 
 在預約到期後，使用者可以在會員中心對該筆預約打心評價。
 
@@ -47,11 +47,11 @@ Unnamed Rental 是一個提供商家可以上架自助型的空間租借服務�
 ### 商家方面
 商家可以在首頁選擇註冊新帳號，或者是直接登入商家會員中心。
 
-<img src="/picture/merchant_options.png" alt="商家註冊登入" width="70%">
+<img src="/picture/merchant_options.png" alt="商家註冊登入" width="50%">
 
 商家會員中心的功能表提供預約月曆、訂單查詢、新增商家、常見問題和目前已存在的商家的狀態和訂單查閱。
 
-<img src="/picture/merchant_member_page_list.png" alt="商家中心功能表" width="30%">
+<img src="/picture/merchant_member_page_list.png" alt="商家中心功能表" width="20%">
 
 在預約月曆的頁面可以查看該月份和未來兩個月的訂單總情況，點擊月曆上的圓圈可以展開查看預約日期、時間、單號、預約者聯絡資料等該筆預約的詳情。
 

@@ -75,7 +75,7 @@ Unnamed Rental 是一個提供商家可以上架自助型的空間租借服務�
 
 ## 核心技術
 #### 後端: 
-Python、FastAPI
+Python、FastAPI、Redis
 #### 前端: 
 JavaScript、HTML
 #### 身分驗證: 

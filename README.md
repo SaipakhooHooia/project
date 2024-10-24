@@ -74,15 +74,24 @@ Unnamed Rental 是一個提供商家可以上架自助型的空間租借服務�
 <img src="/picture/merchant_member_page_merchant_info.png" alt="商家中心商家資訊管理" width="70%">
 
 ## 核心技術
-#### 後端: Python、FastAPI
-#### 前端: JavaScript、HTML
-#### 身分驗證: Google OAuth、JWT
-#### 金流: Tappay金流串接
-#### 圖片儲存: AWS S3
-#### 資料儲存: AWS RDS(MySQL)
-#### 信件發送: AWS Lambda、AWS EventListener、MySQL Trigger
-#### Server: AWS EC2
-#### 版本管理: Github
+#### 後端: 
+Python、FastAPI
+#### 前端: 
+JavaScript、HTML
+#### 身分驗證: 
+Google OAuth、JWT
+#### 金流: 
+Tappay金流串接
+#### 圖片儲存: 
+AWS S3
+#### 資料儲存: 
+AWS RDS(MySQL)
+#### 信件發送: 
+AWS Lambda、AWS EventListener、MySQL Trigger
+#### Server: 
+AWS EC2
+#### 版本管理: 
+Github
 
 ## 系統架構圖
 <img src="/picture/system_architecture.png" alt="系統架構圖" width="50%">

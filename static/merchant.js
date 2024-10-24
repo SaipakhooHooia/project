@@ -410,7 +410,7 @@ function saveSelected(){
         activeMonth = monthToDigit[nextNextElement.querySelector('.month').textContent];
         console.log("activeYear:", activeYear, "activeMonth:", monthToDigit[activeMonth]);
     }}
-    activeDate = document.querySelector(".active-date.selected").textContent;
+    activeDate = document.querySelector(".selected").textContent;
     return {activeYear, activeMonth, activeDate};
     /*if (activeDate) {
         selectedDateandTimeRange[activeYear+"/"+activeMonth+"/"+activeDate] = selectedTimeRange;
@@ -444,7 +444,7 @@ function saveSelected(){
         });
     };*/ //試圖儲存選取過的預約時間但失敗了。取得activeYear/activeMonth/activeDate有成功
 };
-
+/*
 function getPreviousDay(dateStr) {
     const date = new Date(dateStr);
     date.setDate(date.getDate() - 1);
@@ -465,99 +465,8 @@ function getNextDay(dateStr) {
     const [monthDay, year] = formattedDate.split(', ');
     const [month, day] = monthDay.split(' ');
     return `${year}/${month}/${day.padStart(2, '0')}`;
-};
-/*
-function processReservations(selectedDateandTimeRange) {
-    newReservations = {}; // 重設全域變數
-    
-    for (const date in selectedDateandTimeRange) {
-        selectedDateandTimeRange[date].forEach(service => {
-            const startHour = parseInt(service.start.split(":")[0]);
-            const endHour = parseInt(service.end.split(":")[0]);
-            const isNextDay = service.isNextDay;
-            let reservationDate = date;
+};*/
 
-            if (endHour < startHour && !isNextDay) {
-                reservationDate = getPreviousDay(date);
-            }
-
-            if (!newReservations[reservationDate]) {
-                newReservations[reservationDate] = [];
-            }
-            let existingReservation = newReservations[reservationDate].find(r => 
-                r.start === service.start && r.end === service.end && r.price === service.price && r.service_name === service.service_name
-            );
-
-            if (!existingReservation) {
-                newReservations[reservationDate].push({
-                    start: service.start,
-                    end: service.end,
-                    price: service.price,
-                    service_name: service.service_name
-                });
-            }
-        });
-    }
-
-    const selectedTimeDiv = document.querySelector(".selected-time");
-    selectedTimeDiv.innerHTML = "";
-    
-    Object.keys(newReservations).forEach(date => {
-        let selectedDateDiv = document.createElement("div");
-        selectedDateDiv.textContent = date;
-        selectedTimeDiv.appendChild(selectedDateDiv);
-
-        newReservations[date].forEach(reservation => {
-            let bookingMessageDiv = document.createElement("div");
-            let selectedTimeText = `${reservation.start} - ${reservation.end}`;
-            let priceText = `${reservation.price}元`;
-            let serviceNameText = reservation.service_name ? `（${reservation.service_name}）` : '';
-            bookingMessageDiv.textContent = `${selectedTimeText}  ${priceText}${serviceNameText}`;
-            selectedTimeDiv.appendChild(bookingMessageDiv);
-        });
-
-        if (newReservations[date].length > 0) {
-            document.querySelector(".complete-button").style.display = "block";
-        } else {
-            document.querySelector(".complete-button").style.display = "none";
-            selectedTimeDiv.textContent = '目前沒有預約紀錄';
-        }
-    });
-    
-    return newReservations;
-}
-
-function handleCompleteButtonClick() {
-    if (document.querySelector(".selected-time").textContent.trim() === '目前沒有預約紀錄' || document.querySelector(".selected-time").textContent.trim() === '') {
-        alert("請選擇日期");
-        return false;
-    } else {
-        sendBookingData(newReservations);
-    }
-}*/
-
-//在這裡切換到booking page
-/*
-document.querySelector(".complete-button").addEventListener("click", () => {
-    let reservationData = {
-        merchant_name: keyword,
-        reservations: newReservations
-    };
-    localStorage.setItem("newReservations", JSON.stringify(reservationData));
-    //newReservations;
-    console.log("Booking data saved to localStorage and sent to server.");
-
-    let userToken = document.cookie.split('; ').find(row => row.startsWith('user_token='));
-    if (userToken) {
-        window.location.href = `/booking`;
-    }
-    else{
-        document.querySelector(".login-signup-form-user").style.display = "block";
-        document.querySelector(".login-area-user").style.display = "block";
-        document.querySelector(".signup-area-user").style.display = "none";
-    }
-});*/
-  
 //保存localStorage的預約紀錄
 function updateSelectedDate() {
     let localStorage = JSON.parse(localStorage.getItem(keyword));
@@ -737,7 +646,7 @@ function checkListButton(){
 
         if (!newReservations.merchant_name) {
             newReservations.merchant_name = keyword;
-            newReservations.reservations = {};
+            //newReservations.reservations = {};
             localStorage.setItem("newReservations", JSON.stringify(newReservations));
             listElement.innerHTML = '';
         }
@@ -772,6 +681,19 @@ function checkListButton(){
                     <div>價格: ${reservation.price}</div>
                     <div>服務名稱: ${reservation.service_name}</div>
                 `;
+                let Xicon = document.createElement("div");
+                Xicon.className = "datecard-xmark";
+                reservationCard.appendChild(Xicon);
+                Xicon.style.backgroundImage = "url('/static/x_icon.png')";
+                Xicon.style.backgroundSize = "cover";
+                Xicon.style.backgroundRepeat = "no-repeat";
+                Xicon.style.width = "30px";
+                Xicon.style.height = "30px";
+                Xicon.style.cursor = "pointer";
+                Xicon.style.float = "right";
+                Xicon.addEventListener('click', function() {
+                    Xicon.parentElement.remove();
+                });
                 dateCard.appendChild(reservationCard);
             };
             listElement.appendChild(dateCard);
@@ -791,50 +713,8 @@ function checkListButton(){
         });
         listElement.style.display = "block";
     });
+    deleteSelected();
 };
-/*
-function renderListFuntion(serviceHourList, activeTime) {
-    let newReservations = JSON.parse(localStorage.getItem("newReservations")) || { reservations: {} };
-    
-    document.querySelector(".add-to-list").addEventListener('click', function() {
-        let currentDate = `${activeTime.activeYear}-${activeTime.activeMonth}-${activeTime.activeDate}`;
-        let clickedElements = document.querySelectorAll(".service-hour-range.clicked");
-
-        if (!newReservations.reservations[currentDate]) {
-            newReservations.reservations[currentDate] = [];
-        }
-
-        for (let clickedElement of clickedElements) {
-            let index = clickedElement.dataset.index;
-            let serviceHour = serviceHourList[index];
-
-            let tempDict = {
-                "start": serviceHour[0],
-                "end": serviceHour[1],
-                "price": serviceHour[2],
-                "service_name": serviceHour[3]
-            };
-
-            let existingReservation = newReservations.reservations[currentDate].find(r => 
-                r.start === tempDict.start && 
-                r.end === tempDict.end && 
-                r.service_name === tempDict.service_name
-            );
-
-            if (!existingReservation) {
-                newReservations.reservations[currentDate].push(tempDict);
-            }
-        }
-
-        newReservations.merchant_name = keyword;
-
-        localStorage.setItem("newReservations", JSON.stringify(newReservations));
-        
-        console.log("Updated reservations:", newReservations);
-        renderSelectedTime(newReservations);
-    });
-};*/
-
 
 function renderSelectedTime(newReservations){
     if(keyword === newReservations.merchant_name){
@@ -855,4 +735,8 @@ function renderSelectedTime(newReservations){
             };
         };
     };
+};
+
+function deleteSelected(){
+    document
 };

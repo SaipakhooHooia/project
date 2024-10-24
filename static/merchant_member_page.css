@@ -762,6 +762,14 @@ select{
     margin-top: 10px;
 }
 
+.search-box{
+    all: unset;
+    width: 200px;
+    height: 30px;
+    border: 0px;
+    background-color: none;
+}
+
 @keyframes flashAnimation {
     0% {
         font-size: 1rem;

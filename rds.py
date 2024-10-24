@@ -165,12 +165,28 @@ def get_keyword():
     close_connection(mycursor, connection)
     return keywords
 
-def get_data_in_json(keyword = None):
+def get_data_in_json(keyword = None, city = None, type = None, price = None, more = None):
     if redis_client is not None:
-        cache_key = f"merchant_data:{keyword}" if keyword else "merchant_data:all"
+        params = {
+            'keyword': keyword,
+            'city': city,
+            'type': type,
+            'price': price,
+            'more': more
+        }
+        filtered_params = {k: v for k, v in params.items() if v is not None}
+        #將有效的參數轉換成字典
+        
+        if not filtered_params:
+            cache_key = "merchant_data:all"
+        else:
+            param_string = ":".join(f"{k}={v}" for k, v in sorted(filtered_params.items()))
+            #將字典轉換成字串，如"merchant_data:city=台北:keyword=餐廳"
+            cache_key = f"merchant_data:{param_string}"
+        
         cached_data = redis_client.get(cache_key)
         if cached_data:
-            logging.info(f"Get data from cache: {cached_data}")
+            logging.info(f"Get data from cache: {cache_key}")
             return json.loads(cached_data)
     logging.info(f"Fetch data from DB for {keyword}")
     connection = create_connection()
@@ -207,8 +223,42 @@ def get_data_in_json(keyword = None):
             OR m.intro LIKE %s
             OR m.service_type LIKE %s
             OR m.address LIKE %s
+            OR m.supply LIKE %s
+            OR m.note LIKE %s
             )
         '''
+
+    if city:
+        print(city)
+        sql += f'''
+            AND m.address LIKE \'%{city}%\''''
+
+    if type:
+        print(type)
+        sql += f'''
+            AND m.service_type = \'{type}\''''
+
+    if price:
+        print(price)
+        if price == "500元以下":
+            sql += f'''
+                AND sh.price < 500'''
+        elif price == "500元~1000元":
+            sql += f'''
+                AND sh.price BETWEEN 500 AND 1000'''
+        elif price == "1000元~1500元":
+            sql += f'''
+                AND sh.price BETWEEN 1000 AND 1500'''
+        elif price == "1500元以上":
+            sql += f'''
+                AND sh.price > 1500'''
+
+    if more:
+        print(more)
+        sql += f'''
+            AND (m.intro LIKE \'%{more}%\'
+            OR m.supply LIKE \'%{more}%\'
+            OR m.note LIKE \'%{more}%\')'''
     
     sql += '''
         GROUP BY 
@@ -216,10 +266,11 @@ def get_data_in_json(keyword = None):
     '''
     
     if keyword:
-        val = (f'%{keyword}%', f'%{keyword}%', f'%{keyword}%', f'%{keyword}%')
+        val = (f'%{keyword}%', f'%{keyword}%', f'%{keyword}%', f'%{keyword}%', f'%{keyword}%', f'%{keyword}%')
     else:
         val = ()
 
+    print('sql', sql)
     mycursor.execute(sql,val)
     row = mycursor.fetchall()
     for result in row:
@@ -237,7 +288,15 @@ def get_data_in_json(keyword = None):
             'service_hours' : result[11]
         }
 
-    if keyword is not None and keyword not in ['辦公', '娛樂', '運動', '民宿', '藝術'] and len(row) > 0:
+    merchant_list = []
+    sql = "SELECT merchant_name FROM merchants.merchant WHERE on_broad = 1;"
+    mycursor.execute(sql)
+    row = mycursor.fetchall()
+    for result in row:
+        merchant_list.append(result[0])
+    print(merchant_list)
+
+    if keyword is not None and keyword not in ['辦公', '娛樂', '運動', '民宿', '藝術'] and keyword not in merchant_list and len(data) > 0:
         sql = f'SELECT keyword FROM merchants.keyword WHERE keyword = %s'
         val = (keyword,)
         mycursor.execute(sql,val)
@@ -461,12 +520,13 @@ def get_merchants_by_gmail(gmail):
     connection = create_connection()
     mycursor = connection.cursor()
     sql = """
-    SELECT m.merchant_name, m.user_name,m.phone_number, m.account_num, m.intro, m.address, m.google_map_src, m.supply, m.note, 
+    SELECT m.merchant_name, m.user_name,m.phone_number, m.bank_code, m.account_num, m.intro, m.address, m.google_map_src, m.supply, m.note, 
     m.on_broad, m.door_password, sh.service_time_start, sh.service_time_end, sh.price, sh.service_hour_name
     FROM merchants.merchant m
     LEFT JOIN merchants.service_hours sh ON m.id = sh.merchant_ref_id
     WHERE m.gmail = %s;
     """
+    print(sql)
     mycursor.execute(sql, (gmail,))
     rows = mycursor.fetchall()
     #print('rows:', rows)
@@ -477,24 +537,26 @@ def get_merchants_by_gmail(gmail):
             result[merchant_name] = {
                 "contact": row[1],
                 "phone_number": row[2],
-                "account_num": row[3],
-                "intro": row[4],
-                "address": row[5],
-                "google_map_src": row[6],
-                "supply": row[7],
-                "note": row[8],
-                "on_broad": row[9],
-                "door_password": row[10],
+                "bank_code": row[3],
+                "account_num": row[4],
+                "intro": row[5],
+                "address": row[6],
+                "google_map_src": row[7],
+                "supply": row[8],
+                "note": row[9],
+                "on_broad": row[10],
+                "door_password": row[11],
                 "service_hours": [],
             }
         
-        if row[9] is not None:
+        if row[10] is not None:
             result[merchant_name]["service_hours"].append({
-                "startTime": row[11],
-                "endTime": row[12],
-                "price": row[13],
-                "serviceHourName": row[14]
+                "startTime": row[12],
+                "endTime": row[13],
+                "price": row[14],
+                "serviceHourName": row[15]
             })
+    
     if redis_client is not None:
         redis_client.setex(cache_key, 3600, json.dumps(result)) 
     close_connection(mycursor, connection)

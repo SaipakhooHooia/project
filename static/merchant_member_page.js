@@ -50,6 +50,7 @@ async function fetchMerchantData() {
             window.location.href = '/';
             return null;  
         } else {
+            console.log('merchant data:', data);//不知道為什麼駛了銀行代碼，結果在前端顯示undefined
             return data; 
         }
     } catch (error) {
@@ -67,6 +68,7 @@ function renderMerchantMemberPage(memberData) {
     for (let merchantName in memberData) {
         let contact = memberData[merchantName].contact;
         let intro = memberData[merchantName].intro;
+        let bankCode = memberData[merchantName].bank_code;
         let accountNum = memberData[merchantName].account_num;
         let phoneNumber = memberData[merchantName].phone_number;
         let address = memberData[merchantName].address;
@@ -86,6 +88,7 @@ function renderMerchantMemberPage(memberData) {
         const fields = [
             { label: '負責人', name: 'contact', value: contact },
             { label: '場地描述', name: 'intro', value: intro, isTextarea: true },
+            { label: '銀行代碼', name: 'bank_code', value: bankCode },
             { label: '公司帳號', name: 'account_num', value: accountNum },
             { label: '連絡電話', name: 'phone_number', value: phoneNumber },
             { label: '地址', name: 'address', value: address },
@@ -266,6 +269,7 @@ document.querySelector(".submit").addEventListener("click", async (event) => {
         
         let contact = merchantDiv.querySelector('.contact').value;
         let phoneNumber = merchantDiv.querySelector('.phone_number').value;
+        let bankCode = merchantDiv.querySelector('.bank_code').value;
         let accountNum = merchantDiv.querySelector('.account_num').value;
         let intro = merchantDiv.querySelector('.intro').value;
         let address = merchantDiv.querySelector('.address').value;
@@ -293,6 +297,7 @@ document.querySelector(".submit").addEventListener("click", async (event) => {
         merchantData[merchantName] = {
             contact,
             phone_number: phoneNumber,
+            bank_code: bankCode,
             account_num: accountNum,
             intro,
             address,
@@ -1185,11 +1190,12 @@ document.querySelector(".next-page").addEventListener("click", (event) => {
     let merchantName = document.getElementById("new-merchant-name").value;
     let userName = document.getElementById("new-user-name").value;
     let phoneNum = document.getElementById("phone-num").value;
+    let bankCode = document.getElementById("bank-code").value;
     let accountNum = document.getElementById("account-num").value;
     let serviceType = document.getElementById("service-type").value;
     let address = document.getElementById("new-address").value;
 
-    if (!merchantName || !userName || !phoneNum || !accountNum || !serviceType || !address) {
+    if (!merchantName || !userName || !phoneNum || !bankCode || !accountNum || !serviceType || !address) {
         alert("請填寫完整商家資料。");
         return;
     };
@@ -1199,10 +1205,11 @@ document.querySelector(".next-page").addEventListener("click", (event) => {
         return;
     };
 
-    if (!accountNum.match(/^\d{16}$/)) {
-        alert("請輸入正確的銀行帳號。");
+    if (!accountNum.match(/^\d{7,14}$/)) {
+        alert("請輸入 7 到 14 位的正確銀行帳號。");
         return;
     };
+    
     /*let googleMapRawData = document.getElementById("google-map-src").value;
     let srcRegex = /src="([^"]*)"/;
     let match = googleMapRawData.match(srcRegex);
@@ -1220,6 +1227,7 @@ document.querySelector(".next-page").addEventListener("click", (event) => {
         'merchant_name': merchantName,
         'user_name': userName,
         'phone_number': phoneNum,
+        'bank_code': bankCode,
         'account_number': accountNum,
         'service_type': serviceType,
         'address': address,
@@ -1248,6 +1256,7 @@ function renderOldNewMerchantForm() {
           "new-merchant-name": "merchant_name",
           "new-user-name": "user_name",
           "phone-num": "phone_number",
+          "bank-code": "bank_code",
           "account-num": "account_number",
           "service-type": "service_type",
           "new-address": "address",

@@ -115,7 +115,6 @@ async def user_signup(request: Request):
         rds.add_user(name_user, phone_number_user, gmail)
         user_id = rds.check_user_exist(db = "merchants", table = "users", gmail = gmail)[0][0]
         print("user_id:",user_id)
-    #{'name_user': 'midori', 'phone_number_user': '0979521432', 'gmail': 'kawamotoiscute@gmail.com'}
         user_token = jwt_token.User.jwt_encode(name_user, phone_number_user, gmail, user_id)
         print(user_token)
     return user_token
@@ -206,7 +205,6 @@ async def get_merchants():
         lists_dict = {}
         for item in type_list:
             lists_dict[item] = []
-        #{'辦公': [], '民宿': [], '藝術': [], '娛樂': [], '運動': []}
 
         folder_and_images = s3.get_folder_and_images("examplebucket10101010")
         merchant_and_service_type = rds.get_data("merchants", "merchant")
@@ -225,10 +223,16 @@ async def get_merchants():
         logging.error("Error: %s", str(e), exc_info=True)
         return {"error": str(e)}
 @app.get("/api/merchants-browse")
-async def get_merchant(keyword : Optional[str] = Query(None)):
-    if keyword:
-        data_result = rds.get_data_in_json(keyword = keyword)
+async def get_merchant(keyword : Optional[str] = Query(None),city : Optional[str] = Query(None), 
+                       type : Optional[str] = Query(None), price : Optional[str] = Query(None), more: Optional[str] = Query(None)):
+    print(city, type, price, more)
+
+    if keyword or city or type or price or more:
+        data_result = rds.get_data_in_json(keyword = keyword, city = city, type = type, price = price, more = more)
         image_result = s3.list_images_in_folders("examplebucket10101010", *data_result.keys())
+    #if keyword:
+    #    data_result = rds.get_data_in_json(keyword = keyword)
+    #    image_result = s3.list_images_in_folders("examplebucket10101010", *data_result.keys())
     else:
         data_result = rds.get_data_in_json()
         image_result = s3.list_images_in_folders("examplebucket10101010", *data_result.keys())
@@ -247,7 +251,6 @@ async def get_merchant(merchant_name : str):
         data_result[key]['images'] = images
         data_result[key]['calender'] = calender_data
     data_result['order_history'] = order_data
-    #print("data_result type:",type(data_result))
     return data_result
 
 @app.get("/api/merchant_auth")
@@ -257,6 +260,7 @@ async def auth(request: Request):
         decode_token = jwt_token.Merchant.jwt_decode(authorization)
         user_gmail = decode_token['gmail']
         result = rds.get_merchants_by_gmail(user_gmail)
+        print("result:",result)
         return result
     except Exception as e:
         print("Error:", str(e))

@@ -165,8 +165,155 @@ form, .switch-to-login, .switch-to-signup, .login-area>.g_id_signin, .login-area
 
 .search-setting {
     display: none;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background-color: #fff;
+    border-radius: 10px;
+    width: 30%;
+    height: 400px;
+    overflow-y: auto;
+    z-index: 3;
 }
 
 .search-setting-container {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.search-setting-menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.search-setting-menu div {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+    color: #666666;
+}
+
+.search-setting-menu div:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.filtered-class, .filtered-option{
+    background-color: rgba(241, 178, 96, 0.844);
+    color: #fff !important;
+}
+
+.city-select, .class-select, .price-range-select, .more-select {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.class-select, .price-range-select, .more-select {
+    display: none;
+}
+
+.city-select div, .class-select div, .price-range-select div, .more-select div {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666666;
+}
+
+.city-select div:hover, .class-select div:hover, .price-range-select div:hover, .more-select div:hover {
+    background-color: rgba(241, 178, 96, 0.844);
+    color: #fff !important;
+}
+
+.search-setting-title-container {
+    display: flex;
+    background-image: url("/static/logo_background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+    width: 100%;
+}
+
+.search-setting-title {
+    color: #fff;
+    text-shadow: rgba(84, 84, 84, 0.752) 1px 1px 1px;
+    text-align: center;
+    align-items: center;
+    justify-self: center;
+    box-sizing: border-box;
+    font-size: 30px;
+    padding: 10px;
+    font-family: 'Lora', sans-serif;
+    font-weight: bolder;
+    text-align: left;
+}
+
+.close-search-setting {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.clear-filter {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s; 
+    font-weight: bolder;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 60px;
+}
+
+.clear-filter:hover {
+    background-color: #fff;
+    color: #333;
+}
+
+.confirm-button {
+    all: unset;
+    font-size: 20px;
+    padding: 5px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    background-color: antiquewhite;
+}
+
+.confirm-button:hover {
+    cursor: pointer;
+    opacity: 0.8;
+    box-shadow: #666 2px 2px 2px;
 }

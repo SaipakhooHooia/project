@@ -310,5 +310,6 @@ input{
 
 .keyword:hover {
     cursor: pointer;
-    opacity: 0.8;
+    color: #fff !important;
+    background-color: #66666670;
 }

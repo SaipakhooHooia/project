@@ -234,7 +234,3 @@ async function userLogin(userLoginGmail){
         alert(data.error);
     };
 };
-/*
-document.querySelector(".adjust-setting").addEventListener("click", () => {
-    document.querySelector(".search-setting").style.display = "block";
-});*/

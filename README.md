@@ -1,8 +1,8 @@
-#Unnamed Rental
-##核心User Story
+# Unnamed Rental
+## 核心User Story
 Unnamed Rental 是一個提供商家可以上架自助型的空間租借服務、使用者可以進行瀏覽、租借的服務平台。進入首頁後可以以使用者的身分直接對空間進行搜尋，或者是註冊/登入來瀏覽之前的租借歷史紀錄、查看即將到來的預約或取消訂單等等。也可以以商家的身分登入，註冊新商家或者是查看訂單紀錄，對訂單進行退款或修改。
 
-###使用者方面
+### 使用者方面
 
 在首頁自帶關鍵字搜尋功能，將搜尋次數較多的關鍵字放置在首頁。
 ![圖片](/picture/popular_applications.png "受歡迎的應用")
@@ -56,19 +56,19 @@ Unnamed Rental 是一個提供商家可以上架自助型的空間租借服務�
 如果要修改已存在的商店的資料，可以在商家列表下選擇該商店，並在展開的列表中選擇「商家資訊管理」，就可以編輯商店資料。
 ![圖片](/picture/merchant_member_page_merchant_info.png "商家中心商家資訊管理")
 
-##核心技術
-###後端: Python、FastAPI
-###前端: JavaScript、HTML
-###身分驗證: Google OAuth、JWT
-###金流: Tappay金流串接
-###圖片儲存: AWS S3
-###資料儲存: AWS RDS(MySQL)
-###信件發送: AWS Lambda、AWS EventListener、MySQL Trigger
-###Server: AWS EC2
-###版本管理: Github
+## 核心技術
+### 後端: Python、FastAPI
+### 前端: JavaScript、HTML
+### 身分驗證: Google OAuth、JWT
+### 金流: Tappay金流串接
+### 圖片儲存: AWS S3
+### 資料儲存: AWS RDS(MySQL)
+### 信件發送: AWS Lambda、AWS EventListener、MySQL Trigger
+### Server: AWS EC2
+### 版本管理: Github
 
-##系統架構圖
+## 系統架構圖
 ![圖片](/picture/system_architecture.png "系統架構圖")
 
-##DB ERD
+## DB ERD
 ![圖片](/picture/ERD.png "ERD")

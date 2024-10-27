@@ -93,7 +93,7 @@ AWS Lambda、AWS EventListener、MySQL Trigger
 #### Server: 
 AWS EC2
 #### 版本管理: 
-Github
+Github、Docker
 
 ## 系統架構圖
 <img src="/picture/system_architecture.png" alt="系統架構圖" width="50%">
